@@ -7,12 +7,16 @@ from app.repository import user as repositories_users
 from app.schemas.user import UserCreationSchema, UserResponseSchema
 from app.core.security import auth_service
 from app.services.email import send_email
+from app.models.models import Role
+from app.services.roles import RoleAccess
 
 auth_router = APIRouter(prefix='/admin', tags=['admin'])
 get_refresh_token = HTTPBearer()
 
+admin_only_access = RoleAccess([Role.admin, ])
 
-@auth_router.post("/signup", response_model=UserResponseSchema, status_code=status.HTTP_201_CREATED)
+
+@auth_router.post("/signup", response_model=UserResponseSchema, dependencies=[Depends(admin_only_access)], status_code=status.HTTP_201_CREATED)
 async def signup(body: UserCreationSchema, bt: BackgroundTasks, request: Request, db: AsyncSession = Depends(get_db)):
     """
     Sign up a new user.
@@ -37,5 +41,5 @@ async def signup(body: UserCreationSchema, bt: BackgroundTasks, request: Request
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Account already exists")
     body.password = auth_service.get_password_hash(body.password)
     new_user = await repositories_users.create_user(body, db)
-    bt.add_task(send_email, new_user.email, new_user.username, str(request.base_url))
+    bt.add_task(send_email, new_user.email, new_user.full_name, str(request.base_url))
     return new_user
