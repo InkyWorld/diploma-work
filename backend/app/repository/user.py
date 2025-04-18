@@ -1,7 +1,7 @@
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.db.session import get_db
+from backend.app.db.database import get_db
 from app.models.models import User
 from app.schemas.user import UserCreationSchema
 from sqlalchemy import select
@@ -63,7 +63,7 @@ async def update_token(user: User, token: str | None, db: AsyncSession):
     await db.commit()
 
 
-async def confirmed_email(email: str, db: AsyncSession) -> None:
+async def confirm_email(email: str, db: AsyncSession) -> None:
     """
     Confirm a user's email address.
 

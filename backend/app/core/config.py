@@ -23,6 +23,7 @@ class JWTConfig(Settings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
+    EMAIL_TOKEN_EXPIRE_DAYS: int = 7
 
 class RedisConfig(Settings):
     REDIS_HOST: str = "localhost"
