@@ -9,7 +9,7 @@ class Base(DeclarativeBase):
     pass
 
 
-class Role(enum.Enum):
+class Role(str, enum.Enum):
     admin = "admin"
     engineer = "engineer"
     flight_dispatcher = "flight dispatcher"
