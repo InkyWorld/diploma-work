@@ -15,8 +15,10 @@ class Settings(BaseSettings):
         env_file_encoding="utf-8",
     )
 
+
 class DBConfig(Settings):
     DATABASE_URL: str = "postgresql+asyncpg://postgres:111111@localhost:5432/abc"
+
 
 class JWTConfig(Settings):
     SECRET_KEY: str = "1234567890"
@@ -25,6 +27,7 @@ class JWTConfig(Settings):
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
     EMAIL_TOKEN_EXPIRE_DAYS: int = 7
 
+
 class RedisConfig(Settings):
     REDIS_HOST: str = "localhost"
     REDIS_PORT: int = 6379
@@ -32,6 +35,20 @@ class RedisConfig(Settings):
     REDIS_DB: int = 0
 
 
+class EmailConfig(Settings):
+    MAIL_USERNAME: EmailStr = "email@meail.com"
+    MAIL_PASSWORD: str = "password"
+    MAIL_FROM: str = "user"
+    MAIL_PORT: int = 465
+    MAIL_SERVER: str = "server"
+    MAIL_FROM_NAME: str = "example"
+    MAIL_STARTTLS: bool
+    MAIL_SSL_TLS: bool
+    USE_CREDENTIALS: bool
+    VALIDATE_CERTS: bool
+
+
+email_config = EmailConfig()
 config_redis = RedisConfig()
 db_config = DBConfig()
 jwt_config = JWTConfig()
