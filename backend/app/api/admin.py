@@ -10,13 +10,13 @@ from app.services.email import send_email
 from app.models.models import Role
 from app.services.roles import RoleAccess
 
-auth_router = APIRouter(prefix='/admin', tags=['admin'])
+admin_router = APIRouter(prefix='/admin', tags=['admin'])
 get_refresh_token = HTTPBearer()
 
 admin_only_access = RoleAccess([Role.admin, ])
 
 
-@auth_router.post("/signup", response_model=UserResponseSchema, dependencies=[Depends(admin_only_access)], status_code=status.HTTP_201_CREATED)
+@admin_router.post("/signup", response_model=UserResponseSchema, dependencies=[Depends(admin_only_access)], status_code=status.HTTP_201_CREATED)
 async def signup(body: UserCreationSchema, bt: BackgroundTasks, request: Request, db: AsyncSession = Depends(get_db)):
     """
     Sign up a new user.

@@ -9,7 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from jose import JWTError, jwt
 from redis.asyncio import Redis
 
-from backend.app.db.database import get_db
+from app.db.database import get_db
 from app.db.redis import get_redis
 from app.models.models import User
 from app.repository.user import get_user_by_email

@@ -1,7 +1,7 @@
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from backend.app.db.database import get_db
+from app.db.database import get_db
 from app.models.models import User
 from app.schemas.user import UserCreationSchema
 from sqlalchemy import select
