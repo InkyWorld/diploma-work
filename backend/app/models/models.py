@@ -17,8 +17,8 @@ class Role(str, enum.Enum):
     technician = "technician"
 
 class Gender(str, enum.Enum):
-    male = "M"
-    female = "F"
+    M = "M"
+    F = "F"
 
 
 class User(Base):
