@@ -1,13 +1,20 @@
 from abc import ABC
 from typing import Annotated
 
-from pydantic import BaseModel, Field, EmailStr
+
+from pydantic import BaseModel, Field, EmailStr, HttpUrl
 
 from app.models.models import Role, Gender
 
 
 class UserResponseSchema(BaseModel):
-    pass
+    password: Annotated[str, Field(min_length=6, max_length=255)]
+    full_name: Annotated[str, Field(min_length=6, max_length=255)]
+    email: EmailStr
+    role: Role
+    age: int
+    gender: Gender
+    img_profile: str
 
 
 class UserCreationSchema(BaseModel):
@@ -17,8 +24,8 @@ class UserCreationSchema(BaseModel):
     role: Role
     age: int
     gender: Gender
-    img_profile: bytes
-
+    img_profile: str
+    
 
 class TokenSchema(BaseModel):
     access_token: str

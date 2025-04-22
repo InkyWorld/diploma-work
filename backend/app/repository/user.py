@@ -1,10 +1,11 @@
+from typing import List
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.database import get_db
 from app.models.models import User
 from app.schemas.user import UserCreationSchema
-from sqlalchemy import select
+from sqlalchemy import delete, select
 
 
 async def get_user_by_email(email: str, db: AsyncSession = Depends(get_db)):
@@ -103,3 +104,13 @@ async def update_avatar_url(email: str, url: str | None, db: AsyncSession) -> Us
     await db.commit()
     await db.refresh(user)
     return user
+
+async def get_all_users_from_db(db: AsyncSession) -> List[User]:
+    result = await db.execute(select(User))
+    users = result.scalars().all()
+    return users
+
+async def delete_user(email, db: AsyncSession) -> List[User]:
+    stmt = delete(User).where(User.email == email)
+    await db.execute(stmt)
+    await db.commit()
