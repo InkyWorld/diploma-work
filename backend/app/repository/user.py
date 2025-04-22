@@ -40,9 +40,8 @@ async def create_user(body: UserCreationSchema, db: AsyncSession = Depends(get_d
     Returns:
         User: The newly created user object.
     """
-    print(db)
     user = User(**body.model_dump())
-    await db.add(user)
+    db.add(user)
     await db.commit()
     await db.refresh(user)
     return user
