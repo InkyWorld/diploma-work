@@ -12,6 +12,7 @@ from app.db.database import get_db
 from app.models.models import Role
 from app.api.auth.auth import auth_router
 from app.api.roles.admin import admin_router
+from app.api.general.roles import general_roles_router
 from app.services.roles import RoleAccess
 from app.db.redis import redis_manager
 
@@ -76,6 +77,7 @@ app.add_middleware(
 
 app.include_router(auth_router, prefix="/api")
 app.include_router(admin_router, prefix="/api")
+app.include_router(general_roles_router, prefix="/api")
 
 
 @app.get("/api/health_checker")
