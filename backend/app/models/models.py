@@ -16,6 +16,10 @@ class Role(str, enum.Enum):
     shift_supervisor = "shift supervisor"
     technician = "technician"
 
+class Gender(str, enum.Enum):
+    male = "M"
+    female = "F"
+
 
 class User(Base):
     __tablename__ = "users"
@@ -26,6 +30,8 @@ class User(Base):
     verified: Mapped[bool] = mapped_column(Boolean, default=False)
     img_profile: Mapped[str] = mapped_column(String(2000), nullable=True)
     refresh_token: Mapped[str] = mapped_column(String(255), nullable=True)
+    age: Mapped[int] = mapped_column(Integer(), nullable=False)
+    gender: Mapped[Enum] = mapped_column("gender", Enum(Gender), nullable=False)
     created_at: Mapped[date] = mapped_column("created_at", DateTime, default=func.now())
     updated_at: Mapped[date] = mapped_column(
         "updated_at", DateTime, default=func.now(), onupdate=func.now()
