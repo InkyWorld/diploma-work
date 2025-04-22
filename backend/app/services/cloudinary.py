@@ -3,6 +3,7 @@ from cloudinary.utils import cloudinary_url
 from cloudinary.uploader import upload
 from fastapi import HTTPException, UploadFile
 from app.core.config import cloudinary_config
+from cloudinary.api import delete_resources_by_prefix, delete_folder
 
 class Cloudinary:
     settings = config(
@@ -68,6 +69,36 @@ class Cloudinary:
         except Exception as e:
             raise HTTPException(
                 status_code=500, detail=f"Failed to upload to Cloudinary: {e}"
+            )
+        
+    async def delete_avatar_from_cloudinary(self, user_email: str):
+        """
+        Deletes all avatar images from a user-specific folder in Cloudinary.
+
+        Args:
+            user_email (str): The user's email to locate their avatar folder.
+
+        Returns:
+            dict: A dictionary containing the result of the delete operation.
+
+        Raises:
+            HTTPException: If the deletion fails.
+        """
+        try:
+            folder_prefix = f"{self.public_folder}{user_email}"
+            deleted_files_result = delete_resources_by_prefix(folder_prefix)
+            
+            # Delete the empty folder itself
+            deleted_folder_result = delete_folder(folder_prefix)
+
+            return {
+                "deleted_files": deleted_files_result,
+                "deleted_folder": deleted_folder_result
+            }
+        except Exception as e:
+            raise HTTPException(
+                status_code=500,
+                detail=f"Failed to delete avatar folder from Cloudinary: {e}"
             )
 
 

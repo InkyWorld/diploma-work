@@ -114,3 +114,14 @@ async def delete_user(email, db: AsyncSession) -> List[User]:
     stmt = delete(User).where(User.email == email)
     await db.execute(stmt)
     await db.commit()
+    
+
+async def update_user(email, update_data, db: AsyncSession) -> User:
+    user = await get_user_by_email(email, db)
+    for key, value in update_data.items():
+        if value is not None:
+            setattr(user, key, value)
+    db.add(user)
+    await db.commit()
+    await db.refresh(user)
+    return user
