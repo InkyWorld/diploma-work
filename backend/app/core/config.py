@@ -47,8 +47,13 @@ class EmailConfig(Settings):
     USE_CREDENTIALS: bool
     VALIDATE_CERTS: bool
 
+class CloudinaryConfig(Settings):
+    CLOUDINARY_CLOUD_NAME: str = "abc"
+    CLOUDINARY_API_KEY: str = "326488457974591"
+    CLOUDINARY_API_SECRET: str = "secret"
 
 email_config = EmailConfig()
 config_redis = RedisConfig()
+cloudinary_config = CloudinaryConfig()
 db_config = DBConfig()
 jwt_config = JWTConfig()
