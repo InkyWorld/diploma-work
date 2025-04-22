@@ -1,5 +1,7 @@
-from fastapi import APIRouter, HTTPException, Depends, Request, status, BackgroundTasks
+from typing import List
+from fastapi import APIRouter, File, Form, HTTPException, Depends, Query, Request, UploadFile, status, BackgroundTasks
 from fastapi.security import HTTPBearer
+from pydantic import EmailStr
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.database import get_db
@@ -9,37 +11,99 @@ from app.core.security import auth_service
 from app.services.email import send_email
 from app.models.models import Role
 from app.services.roles import RoleAccess
+from app.services.cloudinary import claudinary
 
 admin_router = APIRouter(prefix='/admin', tags=['admin'])
 get_refresh_token = HTTPBearer()
 
 admin_only_access = RoleAccess([Role.admin, ])
 
+@admin_router.post("/user", response_model=UserResponseSchema, dependencies=[Depends(admin_only_access)], status_code=status.HTTP_201_CREATED)
+async def signup(
+            bt: BackgroundTasks, 
+            request: Request,
+            username: EmailStr = Form(...),
+            password: str = Form(...),
+            full_name: str = Form(...),
+            role: str = Form(...),
+            age: int = Form(...),
+            gender: str = Form(...),
+            img_profile: UploadFile = File(...),
+            db: AsyncSession = Depends(get_db)
+        ):
 
-@admin_router.post("/signup", response_model=UserResponseSchema, dependencies=[Depends(admin_only_access)], status_code=status.HTTP_201_CREATED)
-async def signup(body: UserCreationSchema, bt: BackgroundTasks, request: Request, db: AsyncSession = Depends(get_db)):
-    """
-    Sign up a new user.
-
-    This endpoint allows a new user to create an account. If the email already exists, a conflict is raised.
-    The password is hashed before being saved. A confirmation email is sent after the user is created.
-
-    Args:
-        body (UserCreationSchema): The user creation data, including email and password.
-        bt (BackgroundTasks): Background tasks to handle email sending.
-        request (Request): The HTTP request object to retrieve base URL for email.
-        db (AsyncSession, optional): The database session. Defaults to Depends(get_db).
-
-    Raises:
-        HTTPException: If the user already exists (409 Conflict).
-
-    Returns:
-        UserResponseSchema: The newly created user details.
-    """
-    exist_user = await repositories_users.get_user_by_email(body.email, db)
+    exist_user = await repositories_users.get_user_by_email(username, db)
     if exist_user:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Account already exists")
-    body.password = auth_service.get_password_hash(body.password)
-    new_user = await repositories_users.create_user(body, db)
+    
+    max_size = 10 * 1024 * 1024  # 5 MB max file size
+    allowed_extensions = ['.jpg', '.jpeg', '.png']
+    if not any(img_profile.filename.endswith(ext) for ext in allowed_extensions):
+        raise HTTPException(status_code=400, detail="Invalid file type. Allowed formats are: jpg, jpeg, png.")
+    
+    if img_profile.size == 0:
+        raise HTTPException(status_code=400, detail="File is empty.")
+
+    # Read file in chunks
+    current_size = 0
+    chunk_size = 1024 * 1024
+    while True:
+        chunk = await img_profile.read(chunk_size)
+        if not chunk:  # No more data to read
+            break
+        current_size += len(chunk)
+        
+        # Check if the file size exceeds the limit
+        if current_size > max_size:
+            raise HTTPException(status_code=400, detail="File size exceeds the allowed limit of 5MB.")
+    img_profile.file.seek(0)
+        
+    password = auth_service.get_password_hash(password)
+    img_profile = await claudinary.upload_avatar_to_cloudinary(img_profile, username)
+    print(img_profile)
+    try:
+        # Create an instance of UserCreationSchema
+        user_data = UserCreationSchema(
+            email=username,
+            password=password,
+            full_name=full_name,
+            role=role,
+            age=age,
+            gender=gender,
+            img_profile=img_profile
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=f"Invalid data: {e}")
+    
+    new_user = await repositories_users.create_user(user_data, db)
     bt.add_task(send_email, new_user.email, new_user.full_name, str(request.base_url))
     return new_user
+
+
+@admin_router.get("/all_users", response_model=List[UserResponseSchema], dependencies=[Depends(admin_only_access)], status_code=status.HTTP_200_OK)
+async def get_all_users(
+    request: Request,
+    db: AsyncSession = Depends(get_db)
+):
+    users = await repositories_users.get_all_users_from_db(db)
+    if not users:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No users found."
+        )
+    return users
+
+@admin_router.delete("/user", response_model=List[UserResponseSchema], dependencies=[Depends(admin_only_access)], status_code=status.HTTP_200_OK)
+async def delete_user(
+    request: Request,
+    email: EmailStr = Query(..., description="Email of the user to delete"),
+    db: AsyncSession = Depends(get_db)
+):
+    user = await repositories_users.get_user_by_email(email, db)
+    if not user:
+        raise HTTPException(status_code=404, detail=f"User with ID {id} not found")
+
+    await repositories_users.delete_user(email, db)
+    
+    users = await repositories_users.get_all_users_from_db(db)
+    return users
