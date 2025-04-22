@@ -10,8 +10,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.database import get_db
 from app.models.models import Role
-from app.api.auth import auth_router
-from app.api.admin import admin_router
+from app.api.auth.auth import auth_router
+from app.api.roles.admin import admin_router
 from app.services.roles import RoleAccess
 from app.db.redis import redis_manager
 
