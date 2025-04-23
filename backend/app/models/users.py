@@ -4,7 +4,7 @@ from datetime import datetime, date
 from sqlalchemy import Boolean, String, Integer, DateTime, ForeignKey, Enum, Date, func
 from sqlalchemy.orm import mapped_column, Mapped
 
-from app.db.database import Base
+from app.db.base import Base
 
 
 class Role(str, enum.Enum):
@@ -30,10 +30,8 @@ class User(Base):
     refresh_token: Mapped[str] = mapped_column(String(255), nullable=True)
     age: Mapped[int] = mapped_column(Integer(), nullable=False)
     gender: Mapped[Enum] = mapped_column("gender", Enum(Gender), nullable=False)
-    created_at: Mapped[date] = mapped_column("created_at", DateTime, default=func.now())
-    updated_at: Mapped[date] = mapped_column(
-        "updated_at", DateTime, default=func.now(), onupdate=func.now()
-    )
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
     role: Mapped[Enum] = mapped_column(
         "role", Enum(Role), nullable=False
     )

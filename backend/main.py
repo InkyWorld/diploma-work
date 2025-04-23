@@ -10,13 +10,15 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.database import get_db
-from app.models.users import Role
+from app.models.users import Role, User
 from app.api.auth.auth import auth_router
 from app.api.roles.admin import admin_router
 from app.api.general.roles import general_roles_router
 from app.api.general.check import general_check_router
 from app.services.roles import RoleAccess
 from app.db.redis import redis_manager
+from app.repository.user import create_admin
+from app.db.database import sessionmanager
 
 admin_access = RoleAccess([Role.admin])
 
@@ -45,6 +47,8 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     print("App starting up...")
 
     await redis_manager.connect()
+    async with sessionmanager.session() as db:
+        await create_admin(db)
     # Отримуємо сесію Redis для FastAPILimiter
     async with redis_manager.session() as redis:
         await FastAPILimiter.init(redis)
@@ -62,6 +66,7 @@ app = FastAPI(
     version="1.0",
     description="🚀FastAPI backend application🚀",
 )
+
 
 origins = [
     "http://localhost",  # Дозволяє запити з localhost

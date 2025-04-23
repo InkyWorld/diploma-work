@@ -34,3 +34,7 @@ def get_token_from_client_token():
             token.write(credentials.to_json())
 
     print("✅ token.json успішно створено!")
+
+
+if __name__ == "__main__":
+    get_token_from_client_token()

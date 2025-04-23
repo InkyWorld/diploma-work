@@ -29,4 +29,4 @@ services:
       - postgres
     command: >
       sh -c "sleep 10 && alembic upgrade head &&
-            python main.py"
+            python app/utils/get_token.py && python app/main.py"
