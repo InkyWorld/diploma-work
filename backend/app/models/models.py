@@ -4,9 +4,7 @@ from datetime import datetime, date
 from sqlalchemy import Boolean, String, Integer, DateTime, ForeignKey, Enum, Date, func
 from sqlalchemy.orm import relationship, mapped_column, Mapped, DeclarativeBase
 
-
-class Base(DeclarativeBase):
-    pass
+from app.db.database import Base
 
 
 class Role(str, enum.Enum):
