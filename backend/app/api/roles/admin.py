@@ -11,7 +11,7 @@ from app.core.security import auth_service
 from app.services.email import send_email
 from app.models.models import Role
 from app.services.roles import RoleAccess
-from app.services.cloudinary import claudinary
+from app.services.cloudinary import cloudinary
 
 admin_router = APIRouter(prefix='/admin', tags=['admin'])
 get_refresh_token = HTTPBearer()
@@ -59,7 +59,7 @@ async def signup(
     img_profile.file.seek(0)
         
     password = auth_service.get_password_hash(password)
-    img_profile = await claudinary.upload_avatar_to_cloudinary(img_profile, username)
+    img_profile = await cloudinary.upload_avatar_to_cloudinary(img_profile, username)
     print(img_profile)
     try:
         # Create an instance of UserCreationSchema
@@ -104,7 +104,7 @@ async def delete_user(
         raise HTTPException(status_code=404, detail=f"User with email {email} not found")
 
     await repositories_users.delete_user(email, db)
-    await claudinary.delete_avatar_from_cloudinary(email)
+    await cloudinary.delete_avatar_from_cloudinary(email)
     return
 
 @admin_router.patch("/user", response_model=UserResponseSchema, dependencies=[Depends(admin_only_access)], status_code=status.HTTP_200_OK)
@@ -146,8 +146,8 @@ async def edit_user(
             if current_size > max_size:
                 raise HTTPException(status_code=400, detail="File size exceeds the allowed limit of 5MB.")
         img_profile.file.seek(0)
-        await claudinary.delete_avatar_from_cloudinary(email)
-        img_profile = await claudinary.upload_avatar_to_cloudinary(img_profile, email)
+        await cloudinary.delete_avatar_from_cloudinary(email)
+        img_profile = await cloudinary.upload_avatar_to_cloudinary(img_profile, email)
     if password:
         password = auth_service.get_password_hash(password)
 

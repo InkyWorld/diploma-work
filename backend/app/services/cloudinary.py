@@ -102,4 +102,4 @@ class Cloudinary:
             )
 
 
-claudinary = Cloudinary()
+cloudinary = Cloudinary()
