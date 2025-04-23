@@ -1,0 +1,32 @@
+services:
+  redis:
+    image: redis:8.0-rc1-alpine
+    ports:
+      - "${REDIS_PORT}:${REDIS_PORT}"
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+    command: redis-server --requirepass "${REDIS_PASSWORD}"
+
+  postgres:
+    image: postgres:16.8-alpine3.21
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+
+  fastapi:
+    build:
+      context: ./backend       # Directory where Dockerfile is located
+      dockerfile: .DockerFile  # Optional if the file is named 'Dockerfile'
+    ports:
+      - "5000:5000"     # Expose port (adjust to your app)
+    depends_on:
+      - redis
+      - postgres
+    command: >
+      sh -c "sleep 10 && alembic upgrade head &&
+            python main.py"
