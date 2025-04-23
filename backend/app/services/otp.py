@@ -57,3 +57,4 @@ async def send_email(email: EmailStr, username: str, host: str):
         await fm.send_message(message, template_name="otp.html")
     except ConnectionErrors as err:
         print(repr(err))
+
