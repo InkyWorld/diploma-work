@@ -12,7 +12,6 @@ from redis.asyncio import Redis
 from app.db.database import get_db
 from app.db.redis import get_redis
 from app.models.users import User
-from app.repository.user import get_user_by_email
 from app.core.config import jwt_config
 
 
@@ -165,6 +164,7 @@ class Auth:
             raise credentials_exception
         user = await redis.get(f"user:{email}")
         if user is None:
+            from app.repository.user import get_user_by_email
             user = await get_user_by_email(email, db)
             if user is None:
                 raise credentials_exception

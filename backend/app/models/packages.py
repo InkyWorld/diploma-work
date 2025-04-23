@@ -1,7 +1,7 @@
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from sqlalchemy import Integer, String, Date, Time
 
-from app.db.database import Base
+from app.db.base import Base
 
 class WorkPackage(Base):
     __tablename__ = 'work_packages'

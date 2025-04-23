@@ -4,8 +4,10 @@ from typing import Optional
 from pydantic import ConfigDict, EmailStr
 from pydantic_settings import BaseSettings
 
+from app.models.users import Gender
 
-BASE_DIR = Path(__file__).resolve().parent.parent.parent
+
+BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent
 
 
 class Settings(BaseSettings):
@@ -55,6 +57,14 @@ class CloudinaryConfig(Settings):
 class GmailConfig(Settings):
     GMAIL_CLIENT_TOKEN: dict = "{installed : 'client_token'}"
 
+class AdminConfig(Settings):
+    ADMIN_PASSWORD: str = "admin"
+    ADMIN_FULLNAME: str = "Admin User Ampss"
+    ADMIN_AGE: int = 30
+    ADMIN_GENDER: Gender = Gender.M
+    ADMIN_EMAIL: str ="admin@example.com"
+
+admin_config = AdminConfig()
 gmail_config = GmailConfig()
 email_config = EmailConfig()
 config_redis = RedisConfig()

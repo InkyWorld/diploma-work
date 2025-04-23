@@ -4,7 +4,7 @@ from datetime import datetime, date
 from sqlalchemy import Boolean, String, Integer, DateTime, ForeignKey, Enum, Date, Time, func
 from sqlalchemy.orm import relationship, mapped_column, Mapped
 
-from app.db.database import Base
+from app.db.base import Base
 
 class Flight(Base):
     __tablename__ = "flights"
