@@ -11,7 +11,7 @@ from redis.asyncio import Redis
 
 from app.db.database import get_db
 from app.db.redis import get_redis
-from app.models.models import User
+from backend.app.models.users import User
 from app.repository.user import get_user_by_email
 from app.core.config import jwt_config
 

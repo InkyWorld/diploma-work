@@ -9,7 +9,7 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.database import get_db
-from app.models.models import Role
+from backend.app.models.users import Role
 from app.api.auth.auth import auth_router
 from app.api.roles.admin import admin_router
 from app.api.general.roles import general_roles_router

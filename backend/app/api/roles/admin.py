@@ -9,7 +9,7 @@ from app.repository import user as repositories_users
 from app.schemas.user import UserCreationSchema, UserResponseSchema
 from app.core.security import auth_service
 from app.services.email import send_email
-from app.models.models import Role
+from backend.app.models.users import Role
 from app.services.roles import RoleAccess
 from app.services.cloudinary import cloudinary
 
