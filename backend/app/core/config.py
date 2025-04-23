@@ -52,6 +52,10 @@ class CloudinaryConfig(Settings):
     CLOUDINARY_API_KEY: str = "326488457974591"
     CLOUDINARY_API_SECRET: str = "secret"
 
+class GmailConfig(Settings):
+    GMAIL_CLIENT_TOKEN: dict = "{installed : 'client_token'}"
+
+gmail_config = GmailConfig()
 email_config = EmailConfig()
 config_redis = RedisConfig()
 cloudinary_config = CloudinaryConfig()

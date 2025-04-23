@@ -1,6 +1,6 @@
 from fastapi import Request, Depends, HTTPException, status
 
-from backend.app.models.users import Role, User
+from app.models.users import Role, User
 from app.core.security import auth_service
 
 

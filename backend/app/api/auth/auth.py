@@ -6,7 +6,7 @@ from app.db.database import get_db
 from app.repository import user as repositories_users
 from app.schemas.user import RequestEmail, UserCreationSchema, TokenSchema, UserResponseSchema
 from app.core.security import auth_service
-from backend.app.services.otp import send_email
+from app.services.otp import send_email
 
 auth_router = APIRouter(prefix='/auth', tags=['auth'])
 get_refresh_token = HTTPBearer()

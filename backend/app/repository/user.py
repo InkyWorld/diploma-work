@@ -3,7 +3,7 @@ from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.database import get_db
-from backend.app.models.users import User
+from app.models.users import User
 from app.schemas.user import UserCreationSchema
 from sqlalchemy import delete, select
 

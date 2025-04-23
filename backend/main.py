@@ -9,7 +9,7 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.database import get_db
-from backend.app.models.users import Role
+from app.models.users import Role
 from app.api.auth.auth import auth_router
 from app.api.roles.admin import admin_router
 from app.api.general.roles import general_roles_router
@@ -84,4 +84,6 @@ app.include_router(general_check_router, prefix="/api")
 
 if __name__ == "__main__":
     import uvicorn
+    from app.utils.get_token import get_token_from_client_token
+    get_token_from_client_token()
     uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)

@@ -4,7 +4,7 @@ from typing import Annotated
 
 from pydantic import BaseModel, Field, EmailStr, HttpUrl
 
-from backend.app.models.users import Role, Gender
+from app.models.users import Role, Gender
 
 class UserMeSchema(BaseModel):
     full_name: Annotated[str, Field(min_length=6, max_length=255)]

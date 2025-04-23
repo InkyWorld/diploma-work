@@ -8,8 +8,8 @@ from app.db.database import get_db
 from app.repository import user as repositories_users
 from app.schemas.user import UserCreationSchema, UserResponseSchema
 from app.core.security import auth_service
-from backend.app.services.otp import send_email
-from backend.app.models.users import Role
+from app.services.otp import send_email
+from app.models.users import Role
 from app.services.roles import RoleAccess
 from app.services.cloudinary import cloudinary
 
