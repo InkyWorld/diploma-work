@@ -30,8 +30,13 @@ class User(Base):
     refresh_token: Mapped[str] = mapped_column(String(255), nullable=True)
     age: Mapped[int] = mapped_column(Integer(), nullable=False)
     gender: Mapped[Enum] = mapped_column("gender", Enum(Gender), nullable=False)
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
-    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+    
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False
+    )
     role: Mapped[Enum] = mapped_column(
         "role", Enum(Role), nullable=False
     )
