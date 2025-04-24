@@ -142,6 +142,7 @@ async def create_admin(db: AsyncSession) -> User:
         email=admin_config.ADMIN_EMAIL,
         password=auth_service.get_password_hash(admin_config.ADMIN_PASSWORD),
         verified=True,
+        img_profile=admin_config.ADMIN_IMG_PROFILE,
         age=admin_config.ADMIN_AGE,
         gender=admin_config.ADMIN_GENDER,
         role=Role.admin,

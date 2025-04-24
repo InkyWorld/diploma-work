@@ -1,4 +1,5 @@
 from contextlib import asynccontextmanager
+import time
 from typing import AsyncGenerator
 
 from fastapi import FastAPI, Depends, HTTPException
@@ -92,4 +93,4 @@ if __name__ == "__main__":
     import uvicorn
     from app.utils.get_token import get_token_from_client_token
     get_token_from_client_token()
-    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
+    uvicorn.run("main:app", host="0.0.0.0", port=5000, reload=True)

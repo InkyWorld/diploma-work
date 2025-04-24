@@ -1,7 +1,8 @@
+import json
 import os
 from pathlib import Path
 from typing import Optional
-from pydantic import ConfigDict, EmailStr
+from pydantic import ConfigDict, EmailStr, field_validator
 from pydantic_settings import BaseSettings
 
 from app.models.users import Gender
@@ -16,10 +17,14 @@ class Settings(BaseSettings):
         env_file=os.path.join(BASE_DIR, ".env"),
         env_file_encoding="utf-8",
     )
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        if not os.path.exists(os.path.join(BASE_DIR, ".env")):
+            print("Warning: .env file not found. Using default or system environment variables.")
 
 
 class DBConfig(Settings):
-    DATABASE_URL: str = "postgresql+asyncpg://postgres:111111@localhost:5432/abc"
+    DATABASE_URL: str
 
 
 class JWTConfig(Settings):
@@ -31,7 +36,7 @@ class JWTConfig(Settings):
 
 
 class RedisConfig(Settings):
-    REDIS_HOST: str = "localhost"
+    REDIS_HOST: str
     REDIS_PORT: int = 6379
     REDIS_PASSWORD: Optional[str] = None
     REDIS_DB: int = 0
@@ -44,10 +49,10 @@ class EmailConfig(Settings):
     MAIL_PORT: int = 465
     MAIL_SERVER: str = "server"
     MAIL_FROM_NAME: str = "example"
-    MAIL_STARTTLS: bool
-    MAIL_SSL_TLS: bool
-    USE_CREDENTIALS: bool
-    VALIDATE_CERTS: bool
+    MAIL_STARTTLS: bool = False
+    MAIL_SSL_TLS: bool = True
+    USE_CREDENTIALS: bool = True
+    VALIDATE_CERTS: bool = True
 
 class CloudinaryConfig(Settings):
     CLOUDINARY_CLOUD_NAME: str = "abc"
@@ -55,7 +60,13 @@ class CloudinaryConfig(Settings):
     CLOUDINARY_API_SECRET: str = "secret"
 
 class GmailConfig(Settings):
-    GMAIL_CLIENT_TOKEN: dict = "{installed : 'client_token'}"
+    GMAIL_CLIENT_TOKEN: dict = '{"installed": "client_token"}'
+    
+    @field_validator("GMAIL_CLIENT_TOKEN", mode="before")
+    def parse_json(cls, v):
+        if isinstance(v, str):
+            return json.loads(v)
+        return v
 
 class AdminConfig(Settings):
     ADMIN_PASSWORD: str = "admin"
@@ -63,6 +74,7 @@ class AdminConfig(Settings):
     ADMIN_AGE: int = 30
     ADMIN_GENDER: Gender = Gender.M
     ADMIN_EMAIL: str ="admin@example.com"
+    ADMIN_IMG_PROFILE: str = "https://example.com/image.jpg"
 
 admin_config = AdminConfig()
 gmail_config = GmailConfig()
@@ -71,3 +83,4 @@ config_redis = RedisConfig()
 cloudinary_config = CloudinaryConfig()
 db_config = DBConfig()
 jwt_config = JWTConfig()
+
