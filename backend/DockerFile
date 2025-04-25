@@ -31,6 +31,7 @@ COPY ./.env /app/.env
 
 RUN apk add --no-cache postgresql-client
 COPY entrypoint_backend.sh /entrypoint_backend.sh
+RUN dos2unix /entrypoint_backend.sh
 RUN chmod +x /entrypoint_backend.sh
 
 # Make port 5000 available to the outside world (you can change this to your app's port)

@@ -1,5 +1,7 @@
 #!/bin/sh
 
+echo "Starting entrypoint_backend.sh"
+
 set -e
 
 # Завантажуємо .env
