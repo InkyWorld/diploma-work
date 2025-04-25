@@ -7,8 +7,8 @@ from app.models.users import Role, User
 from app.schemas.user import UserCreationSchema
 from sqlalchemy import delete, select
 
-from app.core.config import admin_config
-from app.core.security import auth_service
+from app.core import config, log
+from app.services.auth import auth_service
 from datetime import datetime, timezone
 
 
@@ -132,19 +132,19 @@ async def update_user(email, update_data, db: AsyncSession) -> User:
 
 async def create_admin(db: AsyncSession) -> User:
     # Check if admin already exists
-    admin_user = await get_user_by_email(admin_config.ADMIN_EMAIL, db)
+    admin_user = await get_user_by_email(config.admin_config.ADMIN_EMAIL, db)
 
     if admin_user:
-        print(f"Admin user {admin_config.ADMIN_EMAIL} already exists.")
+        log.info(f"Admin user {config.admin_config.ADMIN_EMAIL} already exists.")
         return admin_user
     admin_user = User(
-        full_name=admin_config.ADMIN_FULLNAME,
-        email=admin_config.ADMIN_EMAIL,
-        password=auth_service.get_password_hash(admin_config.ADMIN_PASSWORD),
+        full_name=config.admin_config.ADMIN_FULLNAME,
+        email=config.admin_config.ADMIN_EMAIL,
+        password=auth_service.get_password_hash(config.admin_config.ADMIN_PASSWORD),
         verified=True,
-        img_profile=admin_config.ADMIN_IMG_PROFILE,
-        age=admin_config.ADMIN_AGE,
-        gender=admin_config.ADMIN_GENDER,
+        img_profile=config.admin_config.ADMIN_IMG_PROFILE,
+        age=config.admin_config.ADMIN_AGE,
+        gender=config.admin_config.ADMIN_GENDER,
         role=Role.admin,
         created_at=datetime.now(timezone.utc),
         updated_at=datetime.now(timezone.utc)

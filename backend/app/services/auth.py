@@ -12,16 +12,16 @@ from redis.asyncio import Redis
 from app.db.database import get_db
 from app.db.redis import get_redis
 from app.models.users import User
-from app.core.config import jwt_config
+from app.core import config
 
 
 class Auth:
     pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-    SECRET_KEY = jwt_config.SECRET_KEY
-    ALGORITHM = jwt_config.ALGORITHM
-    ACCESS_TOKEN_EXPIRE_MINUTES = jwt_config.ACCESS_TOKEN_EXPIRE_MINUTES
-    REFRESH_TOKEN_EXPIRE_DAYS = jwt_config.REFRESH_TOKEN_EXPIRE_DAYS
-    EMAIL_TOKEN_EXPIRE_DAYS = jwt_config.EMAIL_TOKEN_EXPIRE_DAYS
+    SECRET_KEY = config.jwt_config.SECRET_KEY
+    ALGORITHM = config.jwt_config.ALGORITHM
+    ACCESS_TOKEN_EXPIRE_MINUTES = config.jwt_config.ACCESS_TOKEN_EXPIRE_MINUTES
+    REFRESH_TOKEN_EXPIRE_DAYS = config.jwt_config.REFRESH_TOKEN_EXPIRE_DAYS
+    EMAIL_TOKEN_EXPIRE_DAYS = config.jwt_config.EMAIL_TOKEN_EXPIRE_DAYS
     oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/auth/login")
 
     def verify_password(self, plan_password, hashed_password):

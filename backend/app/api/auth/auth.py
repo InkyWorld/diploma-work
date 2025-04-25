@@ -5,8 +5,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.database import get_db
 from app.repository import user as repositories_users
 from app.schemas.user import RequestEmail, UserCreationSchema, TokenSchema, UserResponseSchema
-from app.core.security import auth_service
-from app.services.otp import send_email
+from app.core import log
+from app.services.auth import auth_service
+from app.services import email_otp_service
 
 auth_router = APIRouter(prefix='/auth', tags=['auth'])
 get_refresh_token = HTTPBearer()
@@ -97,7 +98,7 @@ async def confirmed_email(token: str, db: AsyncSession = Depends(get_db)):
     """
     email = await auth_service.decode_email_token(token)
     user = await repositories_users.get_user_by_email(email, db)
-    print(user)
+    log.debug(user)
     if user is None:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Verification error")
     if user.verified:
@@ -129,7 +130,7 @@ async def request_new_email_confirmation_link(body: RequestEmail, background_tas
     if user:
         if user.verified:
             return {"message": "Your email is already confirmed"}
-        background_tasks.add_task(send_email, user.email, user.full_name, str(request.base_url))
+        background_tasks.add_task(email_otp_service, user.email, user.full_name, str(request.base_url))
     else:
         return {"message": "User is`t exist"}
     return {"message": "Check your email for confirmation."}

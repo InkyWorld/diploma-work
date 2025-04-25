@@ -1,6 +1,6 @@
 from redis.asyncio import Redis
 import contextlib
-from app.core.config import config_redis
+from app.core import config, log
 
 
 class RedisSessionManager:
@@ -17,7 +17,7 @@ class RedisSessionManager:
         try:
             await self._redis_client.ping()
         except Exception as e:
-            print(f"Ошибка подключения к Redis: {e}")
+            log.error(f"Ошибка подключения к Redis: {e}")
             
     async def close(self):
         if self._redis_client:
@@ -33,10 +33,10 @@ class RedisSessionManager:
 
 # Створюємо глобальний об'єкт менеджера Redis
 redis_manager = RedisSessionManager(
-    host=config_redis.REDIS_HOST,
-    port=config_redis.REDIS_PORT,
-    db=config_redis.REDIS_DB,
-    password=config_redis.REDIS_PASSWORD
+    host=config.config_redis.REDIS_HOST,
+    port=config.config_redis.REDIS_PORT,
+    db=config.config_redis.REDIS_DB,
+    password=config.config_redis.REDIS_PASSWORD
 )
 
 

@@ -4,13 +4,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.database import get_db
 from app.schemas.user import UserMeSchema
-from app.core.security import auth_service
+from app.services.auth import auth_service
 from app.models.users import Role
-from app.services.roles import RoleAccess
+from app.services.roles import RoleAccessService
 
 
 general_roles_router = APIRouter(prefix='/general', tags=['general'])
-all_roles_access = RoleAccess([role for role in Role])
+all_roles_access = RoleAccessService([role for role in Role])
 
 @general_roles_router.get("/me", response_model=UserMeSchema, status_code=status.HTTP_200_OK, dependencies=[Depends(all_roles_access)])
 async def get_profile(

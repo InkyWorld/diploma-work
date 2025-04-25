@@ -2,14 +2,14 @@ from cloudinary import config
 from cloudinary.utils import cloudinary_url
 from cloudinary.uploader import upload
 from fastapi import HTTPException, UploadFile
-from app.core.config import cloudinary_config
+from app.core import config as conf, log
 from cloudinary.api import delete_resources_by_prefix, delete_folder
 
 class Cloudinary:
     settings = config(
-        cloud_name=cloudinary_config.CLOUDINARY_CLOUD_NAME,
-        api_key=cloudinary_config.CLOUDINARY_API_KEY,
-        api_secret=cloudinary_config.CLOUDINARY_API_SECRET,
+        cloud_name=conf.cloudinary_config.CLOUDINARY_CLOUD_NAME,
+        api_key=conf.cloudinary_config.CLOUDINARY_API_KEY,
+        api_secret=conf.cloudinary_config.CLOUDINARY_API_SECRET,
         secure=True,
     )
     public_folder = f"users_avatar/"

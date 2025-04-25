@@ -1,19 +1,19 @@
+import json
 import os
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 
-from app.core.config import gmail_config
+from app.core.config.base_config import BASE_DIR, TOKEN_PATH, SCOPES
+from app.core.config.config import gmail_config
+from app.core.logger.logger import logger
 
-
-SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
 
 def get_token_from_client_token():
     credentials = None
-    token_path = 'app/utils/token.json'
 
-    if os.path.exists(token_path):
-        credentials = Credentials.from_authorized_user_file(token_path, SCOPES)
+    if os.path.exists(TOKEN_PATH):
+        credentials = Credentials.from_authorized_user_file(TOKEN_PATH, SCOPES)
 
     if not credentials or not credentials.valid:
         if credentials and credentials.expired and credentials.refresh_token:
@@ -30,11 +30,7 @@ def get_token_from_client_token():
             flow.fetch_token(code=code)
             credentials = flow.credentials
 
-        with open(token_path, 'w') as token:
-            token.write(credentials.to_json())
+        with open(TOKEN_PATH, 'w') as token:
+            json.dump(json.loads(credentials.to_json()), token, indent=4)
 
-    print("✅ token.json успішно створено!")
-
-
-if __name__ == "__main__":
-    get_token_from_client_token()
+    logger.info("✅ token.json успішно створено!")

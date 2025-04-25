@@ -10,18 +10,18 @@ import redis.asyncio as redis
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.db.database import get_db
 from app.models.users import Role, User
 from app.api.auth.auth import auth_router
 from app.api.roles.admin import admin_router
 from app.api.general.roles import general_roles_router
 from app.api.general.check import general_check_router
-from app.services.roles import RoleAccess
+from app.services import RoleAccessService
 from app.db.redis import redis_manager
 from app.repository.user import create_admin
 from app.db.database import sessionmanager
+from app.core import log
 
-admin_access = RoleAccess([Role.admin])
+admin_access = RoleAccessService([Role.admin])
 
 
 @asynccontextmanager
@@ -45,7 +45,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
         app = FastAPI(lifespan=lifespan)
         ```
     """
-    print("App starting up...")
+    log.info("App starting up...")
 
     await redis_manager.connect()
     async with sessionmanager.session() as db:
@@ -55,7 +55,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
         await FastAPILimiter.init(redis)
 
     yield
-    print("App shutting down...")
+    log.info("App shutting down...")
     await redis_manager.close()
     await FastAPILimiter.close()
 
@@ -91,6 +91,6 @@ app.include_router(general_check_router, prefix="/api")
 
 if __name__ == "__main__":
     import uvicorn
-    from app.utils.get_token import get_token_from_client_token
+    from app.core.utils.get_token import get_token_from_client_token
     get_token_from_client_token()
     uvicorn.run("main:app", host="0.0.0.0", port=5000, reload=True)

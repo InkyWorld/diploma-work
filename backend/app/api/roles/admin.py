@@ -7,16 +7,17 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.database import get_db
 from app.repository import user as repositories_users
 from app.schemas.user import UserCreationSchema, UserResponseSchema
-from app.core.security import auth_service
-from app.services.otp import send_email
+from app.core import log
+from app.services.auth import auth_service
+from app.services.otp import email_otp_service
 from app.models.users import Role
-from app.services.roles import RoleAccess
+from app.services.roles import RoleAccessService
 from app.services.cloudinary import cloudinary
 
 admin_router = APIRouter(prefix='/admin', tags=['admin'])
 get_refresh_token = HTTPBearer()
 
-admin_only_access = RoleAccess([Role.admin, ])
+admin_only_access = RoleAccessService([Role.admin, ])
 
 @admin_router.post("/user", response_model=UserResponseSchema, dependencies=[Depends(admin_only_access)], status_code=status.HTTP_201_CREATED)
 async def signup(
@@ -60,7 +61,7 @@ async def signup(
         
     password = auth_service.get_password_hash(password)
     img_profile = await cloudinary.upload_avatar_to_cloudinary(img_profile, username)
-    print(img_profile)
+    log.debug(img_profile)
     try:
         # Create an instance of UserCreationSchema
         user_data = UserCreationSchema(
@@ -76,7 +77,7 @@ async def signup(
         raise HTTPException(status_code=400, detail=f"Invalid data: {e}")
     
     new_user = await repositories_users.create_user(user_data, db)
-    bt.add_task(send_email, new_user.email, new_user.full_name, str(request.base_url))
+    bt.add_task(email_otp_service, new_user.email, new_user.full_name, str(request.base_url))
     return new_user
 
 

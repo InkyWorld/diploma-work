@@ -1,10 +1,11 @@
 from fastapi import Request, Depends, HTTPException, status
 
 from app.models.users import Role, User
-from app.core.security import auth_service
+from app.core import log
+from app.services.auth import auth_service
 
 
-class RoleAccess:
+class RoleAccessService:
     """
     A class that checks if a user has the required role to access a resource.
 
@@ -56,7 +57,7 @@ class RoleAccess:
             ```
         """
         if user.role not in self.allowed_roles:
-            print(f"User {user.role} is not allowed")
+            log.debug(f"User {user.role} is not allowed")
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN, detail="FORBIDDEN"
             )

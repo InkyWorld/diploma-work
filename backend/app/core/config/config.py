@@ -1,27 +1,13 @@
 import json
-import os
-from pathlib import Path
 from typing import Optional
-from pydantic import ConfigDict, EmailStr, field_validator
-from pydantic_settings import BaseSettings
+from pydantic import EmailStr, field_validator
 
+from app.core.config.base_config import Settings
 from app.models.users import Gender
+from app.core.logger.logger import logger
+from app.core.config.base_config import BASE_DIR
 
-
-BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent
-
-
-class Settings(BaseSettings):
-    model_config = ConfigDict(
-        extra="ignore",
-        env_file=os.path.join(BASE_DIR, ".env"),
-        env_file_encoding="utf-8",
-    )
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        if not os.path.exists(os.path.join(BASE_DIR, ".env")):
-            print("Warning: .env file not found. Using default or system environment variables.")
-
+logger.debug(f"BASE_DIR: {BASE_DIR}")
 
 class DBConfig(Settings):
     DATABASE_URL: str
@@ -61,6 +47,8 @@ class CloudinaryConfig(Settings):
 
 class GmailConfig(Settings):
     GMAIL_CLIENT_TOKEN: dict = '{"installed": "client_token"}'
+    GMAIL_FROM_EMAIL: str = "example@gmail.com"
+    GMAIL_LETTER_SUBJECT: str = "Test letter from FastAPI"
     
     @field_validator("GMAIL_CLIENT_TOKEN", mode="before")
     def parse_json(cls, v):
@@ -83,4 +71,3 @@ config_redis = RedisConfig()
 cloudinary_config = CloudinaryConfig()
 db_config = DBConfig()
 jwt_config = JWTConfig()
-

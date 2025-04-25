@@ -3,6 +3,7 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.database import get_db
+from app.core import log
 
 general_check_router = APIRouter(prefix='/general', tags=['general'])
 
@@ -37,7 +38,7 @@ async def health_checker(db: AsyncSession = Depends(get_db)):
         # Make request
         result = await db.execute(text("SELECT 1"))
         result = result.fetchone()
-        print(result)
+        log.debug(result)
         if result is None:
             raise HTTPException(
                 status_code=500, detail="Database is not configured correctly"
@@ -46,5 +47,5 @@ async def health_checker(db: AsyncSession = Depends(get_db)):
         return {"message": "Database is connected and healthy", "result": result[0]}
 
     except Exception as e:
-        print(e)
+        log.error(e)
         raise HTTPException(status_code=500, detail="Error connecting to the database")
