@@ -1,18 +1,57 @@
+import asyncio
+import csv
+from datetime import date, datetime, time, timedelta
+from io import StringIO
 import sys
 import os
+
+# from app.models.flights import Flight
+
+from sqlalchemy import Boolean, String, Integer, DateTime, ForeignKey, Enum, Date, Time, func
+from sqlalchemy.orm import relationship, mapped_column, Mapped
+from sqlalchemy.orm import DeclarativeBase
+
+class Base(DeclarativeBase):
+    pass
+
+class Flight(Base):
+    __tablename__ = "flights"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    aircraft_name: Mapped[str] = mapped_column(String(10), nullable=False)
+    
+    departure_date: Mapped[Date] = mapped_column(Date, nullable=False)
+    departure_time: Mapped[Time] = mapped_column(Time, nullable=False)
+    departure_airport: Mapped[str] = mapped_column(String(10), nullable=False)
+    
+    arrival_date: Mapped[Date] = mapped_column(Date, nullable=False)
+    arrival_time: Mapped[Time] = mapped_column(Time, nullable=False)
+    arrival_airport: Mapped[str] = mapped_column(String(10), nullable=False)
+    
+    flight_name: Mapped[str] = mapped_column(String(10), nullable=False)
+    service_class: Mapped[str] = mapped_column(String(1), nullable=False)
+    
+    field1: Mapped[int] = mapped_column(Integer, default=0)
+    field2: Mapped[int] = mapped_column(Integer, default=0)
+
+
+
 x = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 sys.path.append(x)
 print()
 print(x)
-
+from app.db.database import get_db
 import os
 import base64
-from fastapi import HTTPException, status
+from fastapi import Depends, HTTPException, status
+from sqlalchemy.ext.asyncio import AsyncSession
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from app.core import config, base_config, log
+
+from app.db.database import sessionmanager
 
 SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
 
@@ -62,7 +101,7 @@ class GmailService:
             )
 
     
-    def fetch_and_process_emails(self, query):
+    async def fetch_and_process_emails(self, query):
         """
         Fetch and process emails from Gmail using a query filter.
         
@@ -77,7 +116,7 @@ class GmailService:
         
         for message in messages:
             msg = self.service.users().messages().get(userId='me', id=message['id']).execute()
-            self.process_message(msg)
+            await self.process_message(msg)
 
     def get_attachment(self, message_id: str, attachment_id: str) -> bytes:
         try:
@@ -98,7 +137,7 @@ class GmailService:
             log.error(f"Failed to download attachment: {e}", exc_info=True)
             return b''
     
-    def process_message(self, msg):
+    async def process_message(self, msg):
         """
         Обработка полученного письма и сохранение вложений.
         
@@ -119,8 +158,12 @@ class GmailService:
                     continue  # Skip if no data or attachmentId
 
                 if file_data:
-                    self.save_file(part['filename'], file_data)
-                    log.info(f"Файл {part['filename']} успешно сохранен.")
+                    if part['filename'] == 'FutureFlightsFromAmosToday.csv':
+                        async with sessionmanager.session() as db:
+                            await self.save_file(file_data, db)
+                            log.info(f"Файл {part['filename']} успешно обработан.")
+                    
+                    await db.commit()
                 else:
                     log.warning(f"No file data found in part: {part.get('filename', 'Unnamed')}")
             except Exception as e:
@@ -129,21 +172,60 @@ class GmailService:
                     status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
                     detail=f"Failed to process message: {e}"
                 )
+    
+    @staticmethod
+    def convert_minutes_to_time(minutes: int) -> time:
+        # Calculate hours and minutes from the total minutes
+        hours = minutes // 60
+        mins = minutes % 60
+        return time(hours, mins)
+    
+    @staticmethod
+    def convert_days_to_date(days_since_1970: int) -> date:
+        """Конвертирует количество дней с 1970-01-01 в объект даты."""
+        base_date = date(1970, 1, 1)
+        target_date = base_date + timedelta(days=days_since_1970)
+        return target_date
 
-    def save_file(self, filename, data):
+    async def save_file(self, file_data, db: AsyncSession):
         """
-        Сохранение файла во временную директорию.
+        Извлечение данных о рейсах из файла и сохранение в базу данных.
         
-        :param filename: Имя файла.
-        :param data: Данные файла.
+        :param file_data: Данные файла.
+        :param db: Сессия базы данных для сохранения данных.
         """
-        os.makedirs('./downloads', exist_ok=True)  # Создаем директорию, если не существует
-        file_path = os.path.join('./downloads', filename)
-        
-        with open(file_path, 'wb') as f:
-            f.write(data)
-        print(f"Файл {filename} сохранен.")
+        try:
+            # Преобразование данных файла в список строк
+            decoded_data = file_data.decode('utf-8')
+            f = StringIO(decoded_data)
+            reader = csv.DictReader(f, delimiter=';')
+            rows = list(reader)
+            
+            # Пропускаем заголовок
+            for row in rows:
+                flight = Flight(
+                    aircraft_name=row['Flight_Code'],
+                    departure_date=self.convert_days_to_date(int(row['Departure_Date'])),
+                    departure_time=self.convert_minutes_to_time(int(row['Departure_Time'])),
+                    departure_airport=row['Departure_Code'],
+                    arrival_date=self.convert_days_to_date(int(row['Arrival_Date'])),
+                    arrival_time=self.convert_minutes_to_time(int(row['Arrival_Time'])),
+                    arrival_airport=row['Arrival_Code'],
+                    flight_name=row['Flight_Number'],
+                    service_class=row['Flight_Type'],
+                    field1=int(row['Field_1']),
+                    field2=int(row['Field_2'])
+                )
+                db.add(flight)
 
+        except Exception as e:
+            log.error(f"Error saving flight data: {e}", exc_info=True)
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Failed to save flight data to database: {e}"
+            )
+        
+    
 
 service_gmail = None
 # Использование класса:
@@ -155,7 +237,7 @@ if __name__ == "__main__":
     query = f"is:unread from:{config.gmail_config.GMAIL_FROM_EMAIL} subject:{config.gmail_config.GMAIL_LETTER_SUBJECT}"
     
     # Получаем и обрабатываем письма
-    gmail_service.fetch_and_process_emails(query)
+    asyncio.run(gmail_service.fetch_and_process_emails(query))
 
 
     print("✅ Письма успешно обработаны.")
