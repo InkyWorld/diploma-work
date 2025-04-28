@@ -5,35 +5,6 @@ from io import StringIO
 import sys
 import os
 
-# from app.models.flights import Flight
-
-from sqlalchemy import Boolean, String, Integer, DateTime, ForeignKey, Enum, Date, Time, func
-from sqlalchemy.orm import relationship, mapped_column, Mapped
-from sqlalchemy.orm import DeclarativeBase
-
-class Base(DeclarativeBase):
-    pass
-
-class Flight(Base):
-    __tablename__ = "flights"
-
-    id: Mapped[int] = mapped_column(primary_key=True)
-    aircraft_name: Mapped[str] = mapped_column(String(10), nullable=False)
-    
-    departure_date: Mapped[Date] = mapped_column(Date, nullable=False)
-    departure_time: Mapped[Time] = mapped_column(Time, nullable=False)
-    departure_airport: Mapped[str] = mapped_column(String(10), nullable=False)
-    
-    arrival_date: Mapped[Date] = mapped_column(Date, nullable=False)
-    arrival_time: Mapped[Time] = mapped_column(Time, nullable=False)
-    arrival_airport: Mapped[str] = mapped_column(String(10), nullable=False)
-    
-    flight_name: Mapped[str] = mapped_column(String(10), nullable=False)
-    service_class: Mapped[str] = mapped_column(String(1), nullable=False)
-    
-    field1: Mapped[int] = mapped_column(Integer, default=0)
-    field2: Mapped[int] = mapped_column(Integer, default=0)
-
 
 
 x = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
@@ -52,6 +23,9 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from app.core import config, base_config, log
 
 from app.db.database import sessionmanager
+
+from app.models.flights import Flight
+from app.models.works import WorkEvent
 
 SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
 
@@ -158,12 +132,22 @@ class GmailService:
                     continue  # Skip if no data or attachmentId
 
                 if file_data:
-                    if part['filename'] == 'FutureFlightsFromAmosToday.csv':
-                        async with sessionmanager.session() as db:
-                            await self.save_file(file_data, db)
-                            log.info(f"Файл {part['filename']} успешно обработан.")
-                    
-                    await db.commit()
+                    async with sessionmanager.session() as db:
+                        try:
+                            if part['filename'] == 'FutureFlightsFromAmosToday.csv':
+                                await self.save_flights_file(file_data, db)
+                                log.info(f"Файл {part['filename']} успешно обработан.")
+                            if part['filename'] == 'WPEventReport.csv':
+                                await self.save_event_file(file_data, db)
+                                log.info(f"Файл {part['filename']} успешно обработан.")
+                        except Exception as e:
+                            log.error(f"Error saving file data: {e}", exc_info=True)
+                            raise HTTPException(
+                                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                                detail=f"Failed to save file data: {e}"
+                            )
+                        else:
+                            await db.commit()
                 else:
                     log.warning(f"No file data found in part: {part.get('filename', 'Unnamed')}")
             except Exception as e:
@@ -187,7 +171,7 @@ class GmailService:
         target_date = base_date + timedelta(days=days_since_1970)
         return target_date
 
-    async def save_file(self, file_data, db: AsyncSession):
+    async def save_flights_file(self, file_data, db: AsyncSession):
         """
         Извлечение данных о рейсах из файла и сохранение в базу данных.
         
@@ -224,7 +208,40 @@ class GmailService:
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Failed to save flight data to database: {e}"
             )
+    async def save_event_file(self, file_data, db: AsyncSession):
+        """
+        Извлечение данных о событиях из файла и сохранение в базу данных.
         
+        :param file_data: Данные файла.
+        :param db: Сессия базы данных для сохранения данных.
+        """
+        try:
+            # Преобразование данных файла в список строк
+            decoded_data = file_data.decode('utf-8')
+            f = StringIO(decoded_data)
+            reader = csv.DictReader(f, delimiter=';')
+            rows = list(reader)
+            
+            # Пропускаем заголовок
+            for row in rows:
+                work = WorkEvent(
+                    aircraft_code=row['Ac'],
+                    event_code=row['Event'],
+                    work_package_number_identifier=int(row['wpno_i']),
+                    work_package_number=row['wpno'],
+                    event_performance_number_identifier=int(row['event_perfno_i']),
+                    event_display_description=row['event_display'],
+                    estimated_man_hours=row['est_mh'],
+                    status=row['status']
+                )
+                db.add(work)
+
+        except Exception as e:
+            log.error(f"Error saving event data: {e}", exc_info=True)
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Failed to save event data to database: {e}"
+            )
     
 
 service_gmail = None
