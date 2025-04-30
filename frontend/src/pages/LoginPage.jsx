@@ -1,5 +1,5 @@
 import { useDispatch } from "react-redux";
-import handleLogin from "../features/auth/login";
+import handleLogin from "../features/auth/Login";
 import { Link, useNavigate } from "react-router-dom";
 function LoginPage() {
   const navigate = useNavigate();
@@ -26,24 +26,12 @@ function LoginPage() {
         />
       </div>
 
-      <div className="mb-6">
-        <label className="block text-sm font-medium text-gray-700 mb-1">Роль</label>
-        <select className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500">
-          <option value="">-- Виберіть роль --</option>
-          <option value="admin">Адміністратор</option>
-          <option value="engineer">Інженер</option>
-          <option value="foreman">Бригадир</option>
-          <option value="worker">Робітник</option>
-          <option value="dispatcher">Диспетчер</option>
-        </select>
-      </div>
-
       <button
         type="submit"
         className="w-full bg-blue-600 text-white py-2 rounded-xl hover:bg-blue-700 transition"
         onClick={(e) => {
           e.preventDefault();
-          handleLogin({ username: "testUser", password: "123456" }, navigate, dispatch);
+          handleLogin({ login: "admin@example.com", password: "admin" }, navigate, dispatch);
         }}
       >
         Увійти

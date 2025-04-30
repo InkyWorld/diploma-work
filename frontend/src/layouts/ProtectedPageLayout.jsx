@@ -7,12 +7,12 @@ function ProtectedPageLayout() {
   const dispatch = useDispatch();
   return (
     <div className="flex flex-col h-full w-full bg-white">
-      <header className="bg-blue-600 text-white p-4 text-xl font-semibold flex justify-between">
+      <header className="bg-gray-600 text-white p-4 text-xl font-semibold flex justify-between">
         <h1 className="text-lg font-semibold">Header</h1>
         <div className="flex items-center gap-4">
           <span>👤 Ім’я користувача</span>
           <button
-            className="bg-red-500 hover:bg-red-600 text-white px-4 py-1 rounded"
+            className="bg-rose-400 hover:bg-rose-500 text-white px-4 py-1 rounded"
             onClick={() => {
               dispatch(logout());
             }}
@@ -33,7 +33,7 @@ function ProtectedPageLayout() {
             </ul>
           </aside> */}
 
-        <main className="flex-1 p-6 overflow-y-auto">
+        <main className="flex-1 overflow-y-auto">
           <Outlet />
         </main>
       </div>

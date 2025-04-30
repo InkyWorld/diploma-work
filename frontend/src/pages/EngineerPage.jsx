@@ -32,6 +32,14 @@ const testData = [
     created_at: "2025-04-18",
     tasks: [{ id: 3, description: "Перевірка гальм", duration: "1.5h" }],
   },
+  {
+    id: 104,
+    title: "ТО Airbus A330",
+    aircraft: "Airbus A330",
+    status: "in_progress",
+    created_at: "2025-04-18",
+    tasks: [{ id: 3, description: "Перевірка гальм", duration: "1.5h" }],
+  },
 ];
 
 const EngineerDashboard = () => {
@@ -51,7 +59,7 @@ const EngineerDashboard = () => {
       <h1 className="text-3xl font-bold mb-4">📊 Огляд технічного стану</h1>
 
       {/* Статистика */}
-      <div className="flex flex-wrap -mx-2 mb-8">
+      <div className="flex flex-wrap mb-8">
         <div className="w-full sm:w-1/2 lg:w-1/4 px-2 mb-4">
           <div className="bg-blue-100 rounded-xl p-4 shadow h-full flex justify-between items-center">
             <h2 className="text-xl font-medium whitespace-nowrap">📦 Всього:</h2>
@@ -80,7 +88,7 @@ const EngineerDashboard = () => {
 
       {/* Список пакетів */}
       <h2 className="text-2xl font-bold mb-4">📋 Список пакетів</h2>
-      <div className="space-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {testData.map((pkg) => (
           <div key={pkg.id} className=" bg-blue-100 rounded-xl p-4 shadow hover:shadow-md transition">
             <div className="flex justify-between items-center mb-2">
