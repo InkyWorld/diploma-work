@@ -1,24 +1,45 @@
 // components/UserForm.jsx
 import { useState } from "react";
+import { useSelector } from "react-redux";
 
 export default function UserForm({ initialData = {}, onSubmit }) {
   const [formData, setFormData] = useState({
-    full_name: initialData.full_name || "",
-    email: initialData.email || "",
-    role: initialData.role || "technician",
-    age: initialData.age || "",
-    gender: initialData.gender || "male",
+    // full_name: initialData.full_name || "",
+    // email: initialData.email || "",
+    // role: initialData.role || "technician",
+    // age: initialData.age || "",
+    // gender: initialData.gender || "male",
+    // img_profile: initialData.img_profile || "",
+
+    username: "test3@hedotu.com",
+    password: "technician",
+    full_name: "NEWTESTUSER",
+    role: "technician",
+    age: 50,
+    gender: "M",
     img_profile: initialData.img_profile || "",
   });
+
+  const accessToken = useSelector((state) => state.auth.accessToken);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setFormData((prev) => ({
+        ...prev,
+        img_profile: file,
+      }));
+    }
+  };
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(formData);
+    console.log("final data", formData);
+    onSubmit({ formData, accessToken });
   };
 
   return (
@@ -43,7 +64,6 @@ export default function UserForm({ initialData = {}, onSubmit }) {
             onChange={handleChange}
             className="w-full border-2 border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 p-3"
             placeholder="Введіть ПІБ"
-            required
           />
         </div>
 
@@ -56,7 +76,6 @@ export default function UserForm({ initialData = {}, onSubmit }) {
             onChange={handleChange}
             className="w-full border-2 border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 p-3"
             placeholder="example@email.com"
-            required
           />
         </div>
       </div>
@@ -89,7 +108,6 @@ export default function UserForm({ initialData = {}, onSubmit }) {
             onChange={handleChange}
             className="w-full border-2 border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 p-3"
             placeholder="Наприклад, 32"
-            required
           />
         </div>
 
@@ -109,8 +127,32 @@ export default function UserForm({ initialData = {}, onSubmit }) {
 
       {/* Фото профілю */}
       <div>
+        <label className="block text-lg font-medium text-gray-600 mb-2">Фото профілю</label>
+
+        <div className="flex items-center gap-4">
+          <label
+            htmlFor="imageUpload"
+            className="cursor-pointer inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg shadow-sm hover:bg-blue-700 transition"
+          >
+            Обрати файл
+          </label>
+
+          <span className="text-gray-500 text-sm">
+            {formData.img_profile ? formData.img_profile.name : "Файл не вибрано"}
+          </span>
+        </div>
+
+        <input
+          type="file"
+          id="imageUpload"
+          name="img_profile"
+          accept="image/*"
+          onChange={handleFileChange}
+          className="hidden"
+        />
+      </div>
+      {/* <div>
         <label className="block text-lg font-medium text-gray-600 mb-1">Фото профілю</label>
-        {/* <input type="file" id="imageUpload" name="image" accept="image/*"></input> */}
         <input
           type="text"
           name="img_profile"
@@ -119,7 +161,7 @@ export default function UserForm({ initialData = {}, onSubmit }) {
           className="w-full border-2 border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 p-3"
           placeholder="https://example.com/profile.jpg"
         />
-      </div>
+      </div> */}
 
       {/* Кнопка */}
       <div className="pt-4">

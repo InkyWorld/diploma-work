@@ -1,9 +1,10 @@
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import handleLogin from "../features/auth/Login";
 import { Link, useNavigate } from "react-router-dom";
 function LoginPage() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  console.log("Login page init");
   return (
     <form className="w-full max-w-96 mx-auto  mt-10 p-6 bg-white rounded-2xl shadow-lg">
       <h2 className="text-3xl font-bold text-center mb-6 text-gray-800">Вхід в систему</h2>

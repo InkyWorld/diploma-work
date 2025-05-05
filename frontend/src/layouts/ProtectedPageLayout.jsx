@@ -15,6 +15,7 @@ function ProtectedPageLayout() {
             className="bg-rose-400 hover:bg-rose-500 text-white px-4 py-1 rounded"
             onClick={() => {
               dispatch(logout());
+              localStorage.removeItem("refresh_token");
             }}
           >
             Вийти

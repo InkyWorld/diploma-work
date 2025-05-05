@@ -10,16 +10,20 @@ import ErrorMessage from "../../components/ErrorMessage";
 export default function AdminDashboard() {
   const accessToken = useSelector((state) => state.auth.accessToken);
   console.log(accessToken);
+  console.log("admin init");
 
   const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ["users"],
-    queryFn: () => getAllUsers(accessToken),
+    // queryFn: () => getAllUsers(accessToken),
+    queryFn: () => getAllUsers(),
+    retry: false, // 🔥 ВАЖЛИВО
   });
 
   if (isError) return <ErrorMessage message={error.message} onRetry={refetch} />;
   if (isLoading || !data) return <Loader />;
   return (
     <div className="p-8 bg-gray-100 min-h-screen">
+      {console.log("admin jsx")}
       {/* Заголовок + кнопка */}
       <div className="flex flex-wrap gap-4 mb-8 justify-between">
         <div>

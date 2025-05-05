@@ -31,7 +31,9 @@ const handleLogin = async function (credentials, navigate, dispatch) {
   });
   const data = await tokenResponse.json();
   console.log(data);
+  //TODO: 1. Access token зберігаємо в Redux
   dispatch(setAccessToken(data.access_token));
+  //TODO: 2. Refresh token зберігаємо в localStorage
   localStorage.setItem("refresh_token", data.refresh_token);
 
   const meResponse = await fetch(`${API_URL}/api/general/me`, {
