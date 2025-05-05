@@ -9,3 +9,4 @@ postgres-data
 requirements.txt
 secrets
 logs
+downloads

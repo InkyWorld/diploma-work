@@ -1,21 +1,21 @@
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-from sqlalchemy import Integer, String, Date, Time
+from datetime import date, datetime, time
+from aredis_om import HashModel, Field
 
-from app.db.base import Base
+from app.db.redis import redis_manager
 
-class WorkPackage(Base):
-    __tablename__ = 'work_packages'
+class WorkPackage(HashModel):
+    package_number_internal: str = Field(primary_key=True)
+    package_number: str
+    aircraft_registration: str
+    station: str
 
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    package_number_internal: Mapped[int] = mapped_column(Integer, nullable=False)
-    package_number: Mapped[str] = mapped_column(String(50), nullable=False)
-    aircraft_registration: Mapped[str] = mapped_column(String(10), nullable=False)
-    station: Mapped[str] = mapped_column(String(10), nullable=False)
+    start_date: date
+    start_time: time
+    end_date: date
+    end_time: time
 
-    start_date: Mapped[Date] = mapped_column(Date, nullable=False)
-    start_time: Mapped[Time] = mapped_column(Time, nullable=False)
-    end_date: Mapped[Date] = mapped_column(Date, nullable=False)
-    end_time: Mapped[Time] = mapped_column(Time, nullable=False)  
+    description: str
+    status: int
 
-    description: Mapped[str] = mapped_column(String(511), nullable=False)
-    status: Mapped[int] = mapped_column(Integer, nullable=False)
+    class Meta:
+        database = redis_manager._redis_client

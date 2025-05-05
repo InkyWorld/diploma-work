@@ -1,27 +1,21 @@
-import enum
-from datetime import datetime, date
+from datetime import date, time
 
-from sqlalchemy import Boolean, String, Integer, DateTime, ForeignKey, Enum, Date, Time, func
-from sqlalchemy.orm import relationship, mapped_column, Mapped
+from aredis_om import HashModel, Field
 
-from app.db.base import Base
+from app.db.redis import redis_manager
 
-class Flight(Base):
-    __tablename__ = "flights"
+class Flight(HashModel):
+    aircraft_name: str
+    departure_date: date
+    departure_time: time
+    departure_airport: str
+    arrival_date: date
+    arrival_time: time
+    arrival_airport: str 
+    flight_name: str
+    service_class: str
+    field1: int = Field(default=0)
+    field2: int = Field(default=0)
 
-    id: Mapped[int] = mapped_column(primary_key=True)
-    aircraft_name: Mapped[str] = mapped_column(String(10), nullable=False)
-    
-    departure_date: Mapped[Date] = mapped_column(Date, nullable=False)
-    departure_time: Mapped[Time] = mapped_column(Time, nullable=False)
-    departure_airport: Mapped[str] = mapped_column(String(10), nullable=False)
-    
-    arrival_date: Mapped[Date] = mapped_column(Date, nullable=False)
-    arrival_time: Mapped[Time] = mapped_column(Time, nullable=False)
-    arrival_airport: Mapped[str] = mapped_column(String(10), nullable=False)
-    
-    flight_name: Mapped[str] = mapped_column(String(10), nullable=False)
-    service_class: Mapped[str] = mapped_column(String(1), nullable=False)
-    
-    field1: Mapped[int] = mapped_column(Integer, default=0)
-    field2: Mapped[int] = mapped_column(Integer, default=0)
+    class Meta:
+        database = redis_manager._redis_client

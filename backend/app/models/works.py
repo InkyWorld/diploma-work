@@ -1,18 +1,19 @@
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-from sqlalchemy import Integer, String, Float
+from datetime import date, time
 
-from app.db.base import Base
+from aredis_om import HashModel, Field
 
-class WorkEvent(Base):
-    __tablename__ = 'work_events'
+from app.db.redis import redis_manager
 
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    
-    aircraft_code: Mapped[str] = mapped_column(String(15), nullable=False)
-    event_code: Mapped[str] = mapped_column(String(511), nullable=False)
-    work_package_number_identifier: Mapped[int] = mapped_column(Integer, nullable=False)
-    work_package_number: Mapped[str] = mapped_column(String(255), nullable=False)
-    event_performance_number_identifier: Mapped[int] = mapped_column(Integer, nullable=False)
-    event_display_description: Mapped[str] = mapped_column(String(511), nullable=False)
-    estimated_man_hours: Mapped[str] = mapped_column(String(255), nullable=False)
-    status: Mapped[str] = mapped_column(String(1), nullable=False)
+class WorkEvent(HashModel):
+
+    aircraft_code: str
+    event_code: str
+    work_package_number_identifier: int
+    work_package_number: str
+    event_performance_number_identifier: int
+    event_display_description: str
+    estimated_man_hours: str
+    status: str
+
+    class Meta:
+        database = redis_manager._redis_client

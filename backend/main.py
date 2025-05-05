@@ -47,17 +47,23 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     """
     log.info("App starting up...")
 
-    await redis_manager.connect()
+    await redis_manager.connect_check()
+    log.info("Redis connection established")
+    await redis_manager.apply_migrations()
+    log.info("Redis migrations applied")
     async with sessionmanager.session() as db:
         await create_admin(db)
     # Отримуємо сесію Redis для FastAPILimiter
     async with redis_manager.session() as redis:
         await FastAPILimiter.init(redis)
+        log.info("FastAPILimiter initialized")
 
     yield
     log.info("App shutting down...")
     await redis_manager.close()
+    log.info("Redis connection closed")
     await FastAPILimiter.close()
+    log.info("FastAPILimiter closed")
 
 
 app = FastAPI(
