@@ -8,7 +8,7 @@ from app.core import config, log
 class RedisSessionManager:
     def __init__(self, host: str, port: int, db: int, password: str | None = None):
         self._redis_url = f"redis://:{password}@{host}:{port}/{db}" if password else f"redis://{host}:{port}/{db}"
-        self._redis_client = get_redis_connection(url=self._redis_url, decode_responses=True)
+        self._redis_client = get_redis_connection(url=self._redis_url, decode_responses=False)
 
     async def connect_check(self):
         """Optional method to check connection explicitly"""

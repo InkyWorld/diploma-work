@@ -167,3 +167,10 @@ class AmosGmailService:
         await self.fetch_and_process_emails(query)
 
 service_gmail = AmosGmailService(SCOPES)
+
+
+if __name__ == "__main__":
+    # Example usage
+    
+    service = AmosGmailService(SCOPES)
+    asyncio.run(service.update_amos_tables())

@@ -130,6 +130,19 @@ class Auth:
         payload = self._decode_token(refresh_token, expected_scope="refresh_token")
         return payload["sub"]
 
+    async def get_user_from_db_and_save_to_redis(self, email: str, db: AsyncSession, redis: Redis) -> User:
+        from app.repository.user import get_user_by_email
+        user = await get_user_by_email(email, db)
+        if user is None:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Could not validate credentials",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+        await redis.set(f"user:{email}", pickle.dumps(user))
+        await redis.expire(f"user:{email}", 900)
+        return user
+    
     async def authenticate_user(
         self, token: str = Depends(oauth2_scheme), db: AsyncSession = Depends(get_db), redis: Redis = Depends(get_redis)
     ) -> Coroutine[Any, Any, User]:
@@ -164,15 +177,16 @@ class Auth:
             raise credentials_exception
         user = await redis.get(f"user:{email}")
         if user is None:
-            from app.repository.user import get_user_by_email
-            user = await get_user_by_email(email, db)
-            if user is None:
-                raise credentials_exception
-            await redis.set(f"user:{email}", pickle.dumps(user))
-            await redis.expire(f"user:{email}", 900)
+            await self.get_user_from_db_and_save_to_redis(email, db, redis)
         else:
-            user = pickle.loads(user)
+            try:
+                user = pickle.loads(user)
+            except Exception:
+                await self.get_user_from_db_and_save_to_redis(email, db, redis)
         return user
+
+
+
 
 
 

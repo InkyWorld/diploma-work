@@ -113,12 +113,12 @@ async def edit_user(
             bt: BackgroundTasks, 
             request: Request,
             email: EmailStr = Query(..., description="Email of the user to update"),
-            password: str = Form(None),
-            full_name: str = Form(None),
-            role: str = Form(None),
-            age: int = Form(None),
-            gender: str = Form(None),
-            img_profile: UploadFile = File(None),
+            password: str | None = Form(None),
+            full_name: str | None = Form(None),
+            role: str | None = Form(None),
+            age: int | None = Form(None),
+            gender: str | None = Form(None),
+            img_profile: UploadFile | None = File(None),
             db: AsyncSession = Depends(get_db)
         ):
     user = await repositories_users.get_user_by_email(email, db)

@@ -65,29 +65,16 @@ class FileDataHandler:
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Failed to save package data to database: {e}"
             )
-    @staticmethod
-    def convert_minutes_to_time(minutes: int) -> time:
-        # Calculate hours and minutes from the total minutes
-        hours = minutes // 60
-        mins = minutes % 60
-        return time(hours, mins)
-    
-    @staticmethod
-    def convert_days_to_date(days_since_1970: int) -> date:
-        """Конвертирует количество дней с 1970-01-01 в объект даты."""
-        base_date = date(1970, 1, 1)
-        target_date = base_date + timedelta(days=days_since_1970)
-        return target_date
     
     async def prepare_data(self, row: Dict[str, str], model_class):
         if model_class == Flight:
             return {
                 'aircraft_name': row['Flight_Code'],
-                'departure_date': self.convert_days_to_date(int(row['Departure_Date'])),
-                'departure_time': self.convert_minutes_to_time(int(row['Departure_Time'])),
+                'departure_date': int(row['Departure_Date']),
+                'departure_time': int(row['Departure_Time']),
                 'departure_airport': row['Departure_Code'],
-                'arrival_date': self.convert_days_to_date(int(row['Arrival_Date'])),
-                'arrival_time': self.convert_minutes_to_time(int(row['Arrival_Time'])),
+                'arrival_date': int(row['Arrival_Date']),
+                'arrival_time': int(row['Arrival_Time']),
                 'arrival_airport': row['Arrival_Code'],
                 'flight_name': row['Flight_Number'],
                 'service_class': row['Flight_Type'],
@@ -111,10 +98,10 @@ class FileDataHandler:
                 'package_number': row['wpno'],
                 'aircraft_registration': row[' ac_registr'],
                 'station': row['station'],
-                'start_date': self.convert_days_to_date(int(row['start_date'])),
-                'start_time': self.convert_minutes_to_time(int(row['start_time'])),
-                'end_date': self.convert_days_to_date(int(row['end_date'])),
-                'end_time': self.convert_minutes_to_time(int(row['end_time'])),
+                'start_date': int(row['start_date']),
+                'start_time': int(row['start_time']),
+                'end_date': int(row['end_date']),
+                'end_time': int(row['end_time']),
                 'description': row['description'],
                 'status': int(row['status'])
             }
@@ -123,9 +110,9 @@ class FileDataHandler:
     async def delete_all_data(self, redis: Redis):
         try:
             pipe = redis.pipeline()
-            await Flight.delete_all(pipeline=pipe)
-            await WorkEvent.delete_all(pipeline=pipe)
-            await WorkPackage.delete_all(pipeline=pipe)
+            await Flight.delete_many(models={}, pipeline=pipe)
+            await WorkEvent.delete_many(models={}, pipeline=pipe)
+            await WorkPackage.delete_many(models={}, pipeline=pipe)
             await pipe.execute()
             log.info("Все данные успешно удалены.")
         except Exception as e:

@@ -20,6 +20,7 @@ from app.db.redis import redis_manager
 from app.repository.user import create_admin
 from app.db.database import sessionmanager
 from app.core import log
+from app.api.roles.flight_dispatcher import flight_dispatcher_router
 
 admin_access = RoleAccessService([Role.admin])
 
@@ -93,10 +94,14 @@ app.include_router(auth_router, prefix="/api")
 app.include_router(admin_router, prefix="/api")
 app.include_router(general_roles_router, prefix="/api")
 app.include_router(general_check_router, prefix="/api")
+app.include_router(
+    flight_dispatcher_router, prefix="/api", tags=["flight_dispatcher"]
+)
+
 
 
 if __name__ == "__main__":
     import uvicorn
     from app.core.utils.get_token import get_token_from_client_token
     get_token_from_client_token()
-    uvicorn.run("main:app", host="0.0.0.0", port=5000, reload=True)
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

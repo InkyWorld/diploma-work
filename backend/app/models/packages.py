@@ -9,10 +9,10 @@ class WorkPackage(HashModel):
     aircraft_registration: str
     station: str
 
-    start_date: date
-    start_time: time
-    end_date: date
-    end_time: time
+    start_date: int
+    start_time: int
+    end_date: int
+    end_time: int
 
     description: str
     status: int
