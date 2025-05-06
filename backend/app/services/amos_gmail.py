@@ -24,7 +24,7 @@ from app.core import config, base_config, log
 
 from app.db.redis import redis_manager
 
-from app.core import amos_file_handler
+from app.core.utils.amos_file_handler import amos_file_handler
 SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
 
 file_handlers = {

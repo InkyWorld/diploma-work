@@ -108,4 +108,4 @@ if __name__ == "__main__":
     import uvicorn
     from app.core.utils.get_token import get_token_from_client_token
     get_token_from_client_token()
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("main:app", host="0.0.0.0", port=4000, reload=True)
