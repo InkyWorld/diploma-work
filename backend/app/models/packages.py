@@ -5,14 +5,14 @@ from app.db.redis import redis_manager
 
 class WorkPackage(HashModel):
     package_number_internal: str = Field(primary_key=True)
-    package_number: str
-    aircraft_registration: str
-    station: str
+    package_number: str  = Field(index=True)
+    aircraft_registration: str = Field(index=True)
+    station: str = Field(index=True)
 
-    start_date: int
-    start_time: int
-    end_date: int
-    end_time: int
+    start_date: int = Field(index=True)
+    start_time: int = Field(index=True)
+    end_date: int = Field(index=True)
+    end_time: int = Field(index=True)
 
     description: str
     status: int

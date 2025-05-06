@@ -6,7 +6,7 @@ from typing import Dict, List
 from fastapi import HTTPException, status
 from redis.asyncio.client import Redis
 from app.models.flights import Flight
-from app.models.works import WorkEvent
+from app.models.events import WorkEvent
 from app.models.packages import WorkPackage
 from app.core import log
 

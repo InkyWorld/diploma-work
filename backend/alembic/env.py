@@ -11,7 +11,8 @@ from app.core.config.config import db_config
 from app.db.base import Base
 from app.core import log
 
-from app.models import users, flights, works, packages
+from app.models import users, flights, packages
+from app.models import events
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
