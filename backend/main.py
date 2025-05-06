@@ -21,6 +21,7 @@ from app.repository.user import create_admin
 from app.db.database import sessionmanager
 from app.core import log
 from app.api.roles.flight_dispatcher import flight_dispatcher_router
+from app.api.roles.engineer import engineer_dispatcher_router
 
 admin_access = RoleAccessService([Role.admin])
 
@@ -96,6 +97,9 @@ app.include_router(general_roles_router, prefix="/api")
 app.include_router(general_check_router, prefix="/api")
 app.include_router(
     flight_dispatcher_router, prefix="/api", tags=["flight_dispatcher"]
+)
+app.include_router(
+    engineer_dispatcher_router, prefix="/api", tags=["engineer"]
 )
 
 
