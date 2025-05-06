@@ -1,15 +1,7 @@
 from typing import List
-from datetime import date, datetime, timezone
+from datetime import date
 
-from fastapi import Depends
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import delete, select, and_
-from redis.asyncio.client import Redis
-
-from app.core import config, log
-from app.services.auth import auth_service
 from app.models.flights import Flight
-from app.schemas.flights import FlightFilter
 from app.core import data_and_time_converter
 
 async def get_flight_arrival_by_date(
@@ -24,7 +16,7 @@ async def get_flight_arrival_by_date(
         flight.departure_time = data_and_time_converter.convert_minutes_to_time(flight.departure_time)
         flight.arrival_time = data_and_time_converter.convert_minutes_to_time(flight.arrival_time)
     return results
-    return results
+
 
 async def get_flight_departure_by_date(
     start_date: date, end_date: date
@@ -38,3 +30,4 @@ async def get_flight_departure_by_date(
         flight.departure_time = data_and_time_converter.convert_minutes_to_time(flight.departure_time)
         flight.arrival_time = data_and_time_converter.convert_minutes_to_time(flight.arrival_time)
     return results
+

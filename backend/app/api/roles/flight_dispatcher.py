@@ -13,8 +13,8 @@ flight_dispatcher_router = APIRouter(
     prefix="/flight_dispatcher",
     tags=["flight_dispatcher"]
 )
-#dependencies=[Depends(flight_dispatcher_only_access)]
-@flight_dispatcher_router.get("/flights_arrival", response_model=List[FutureFlightsResponseSchema], status_code=status.HTTP_200_OK)
+
+@flight_dispatcher_router.get("/flights_arrival", response_model=List[FutureFlightsResponseSchema], dependencies=[Depends(flight_dispatcher_only_access)], status_code=status.HTTP_200_OK)
 async def get_flights_by_date(
     start_date: date = Query(..., description="Start date in yyyy-mm-dd format"),
     end_date: date = Query(..., description="End date in yyyy-mm-dd format"),
