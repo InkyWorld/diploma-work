@@ -1,13 +1,12 @@
 import { useForm } from "react-hook-form";
+import { useSelector } from "react-redux";
 import { useState } from "react";
-
+import { BiErrorCircle } from "react-icons/bi";
+import { IoIosArrowDropdownCircle } from "react-icons/io";
 import PasswordInput from "./forms/PasswordInput";
 import Input from "./forms/Input";
 
-import { BiErrorCircle } from "react-icons/bi";
-import { IoIosArrowDropdownCircle } from "react-icons/io";
-
-function UserForm({ initialData = {}, mutate, isPending }) {
+function TestComponent({ initialData = {}, mutate, isPending }) {
   const isEditMode = initialData.full_name ? true : false;
   console.log("IS CURRENT MODE EDIT", isEditMode);
 
@@ -286,4 +285,4 @@ function UserForm({ initialData = {}, mutate, isPending }) {
   );
 }
 
-export default UserForm;
+export default TestComponent;

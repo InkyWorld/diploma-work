@@ -1,16 +1,21 @@
 import API_URL from "../../config";
 import { setAccessToken, setRole } from "../../redux/slices/authSlice";
 
-const handleLogin = async function (credentials, navigate, dispatch) {
+const login = async function (credentials, navigate, dispatch) {
   const tokenResponse = await fetch(`${API_URL}/api/auth/login/`, {
     method: "POST",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
     },
     // body: new URLSearchParams(credentials)
+
+    // body: new URLSearchParams({
+    //   username: "admin@example.com",
+    //   password: "admin",
+    // }),
     body: new URLSearchParams({
-      username: "admin@example.com",
-      password: "admin",
+      username: "wogana7066@hazhab.com",
+      password: "12345678",
     }),
     // body: new URLSearchParams({
     //   username: "xexet74033@bauscn.com",
@@ -53,4 +58,4 @@ const handleLogin = async function (credentials, navigate, dispatch) {
   else navigate("/forbidden");
 };
 
-export default handleLogin;
+export default login;

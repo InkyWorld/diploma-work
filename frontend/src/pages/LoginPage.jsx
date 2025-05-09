@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import handleLogin from "../features/auth/Login";
+import login from "../features/auth/login";
 import { Link, useNavigate } from "react-router-dom";
 function LoginPage() {
   const navigate = useNavigate();
@@ -32,7 +32,7 @@ function LoginPage() {
         className="w-full bg-blue-600 text-white py-2 rounded-xl hover:bg-blue-700 transition"
         onClick={(e) => {
           e.preventDefault();
-          handleLogin({ login: "admin@example.com", password: "admin" }, navigate, dispatch);
+          login({ login: "admin@example.com", password: "admin" }, navigate, dispatch);
         }}
       >
         Увійти
