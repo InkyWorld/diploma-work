@@ -109,11 +109,14 @@ class FileDataHandler:
     
     async def delete_all_data(self, redis: Redis):
         try:
-            pipe = redis.pipeline()
-            await Flight.delete_many(models={}, pipeline=pipe)
-            await WorkEvent.delete_many(models={}, pipeline=pipe)
-            await WorkPackage.delete_many(models={}, pipeline=pipe)
-            await pipe.execute()
+            async with redis.pipeline() as pipe:
+                all_flights = await Flight.find().all()
+                all_events = await WorkEvent.find().all()
+                all_packages = await WorkPackage.find().all()
+                await Flight.delete_many(models=all_flights, pipeline=pipe)
+                await WorkEvent.delete_many(models=all_events, pipeline=pipe)
+                await WorkPackage.delete_many(models=all_packages, pipeline=pipe)
+                await pipe.execute()
             log.info("Все данные успешно удалены.")
         except Exception as e:
             log.error(f"Ошибка при удалении данных: {e}", exc_info=True)

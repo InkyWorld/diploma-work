@@ -114,6 +114,11 @@ async def get_all_users_from_db(db: AsyncSession) -> List[User]:
     users = result.scalars().all()
     return users
 
+
+async def get_users_by_ids(user_ids: List[int], db: AsyncSession) -> List[User]:
+    result = await db.execute(select(User).where(User.id.in_(user_ids)))
+    return result.scalars().all()
+
 async def delete_user(email, db: AsyncSession) -> List[User]:
     stmt = delete(User).where(User.email == email)
     await db.execute(stmt)

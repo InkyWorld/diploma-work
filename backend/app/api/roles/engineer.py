@@ -14,24 +14,21 @@ engineer_dispatcher_router = APIRouter(
     prefix="/engineer",
     tags=["engineer"]
 )
-#dependencies=[Depends(engineer_only_access)]
-@engineer_dispatcher_router.get("/event_report", response_model=List[WorkEventResponseSchema], status_code=status.HTTP_200_OK)
-async def get_events_by_criteria(
+
+@engineer_dispatcher_router.get("/event_report", response_model=List[WorkEventResponseSchema], dependencies=[Depends(engineer_only_access)], status_code=status.HTTP_200_OK)
+async def get_events(
     aircraft_code: Optional[str] = Query(None, description="Aircraft code"),
     work_package_number_identifier: Optional[int] = Query(None, description="Work package number identifier"),
     event_performance_number_identifier: Optional[int] = Query(None, description="Event performance number identifier"),
 ):
-    if len([param for param in [aircraft_code, work_package_number_identifier, event_performance_number_identifier] if param is not None]) > 1:
-        raise HTTPException(status_code=400, detail="Please provide only one of the following parameters or nothing: aircraft_code, work_package_number_identifier, event_performance_number_identifier")
-    
     return await get_work_events_by_criteria(
         aircraft_code=aircraft_code,
         work_package_number_identifier=work_package_number_identifier,
         event_performance_number_identifier=event_performance_number_identifier
     )
-    
-@engineer_dispatcher_router.get("/packages", response_model=List[WorkPackageResponseSchema], status_code=status.HTTP_200_OK)
-async def get_packages_by_criteria(
+
+@engineer_dispatcher_router.get("/packages", response_model=List[WorkPackageResponseSchema], dependencies=[Depends(engineer_only_access)], status_code=status.HTTP_200_OK)
+async def get_packages(
     package_number_internal: Optional[str] = Query(None, description="Internal package number"),
     aircraft_registration: Optional[str] = Query(None, description="Aircraft registration"),
     station: Optional[str] = Query(None, description="Station or airport code"),
@@ -44,6 +41,7 @@ async def get_packages_by_criteria(
         raise HTTPException(status_code=400, detail="Not start_date and start_time or start_date and not start_time")
     if not end_date and end_time or end_date and not end_time:
         raise HTTPException(status_code=400, detail="Not end_date and end_time or end_date and not end_time")
+    
     return await get_work_packages_by_criteria(
         package_number_internal=package_number_internal,
         aircraft_registration=aircraft_registration,

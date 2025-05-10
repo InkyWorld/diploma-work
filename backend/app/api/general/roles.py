@@ -12,7 +12,7 @@ from app.services.roles import RoleAccessService
 general_roles_router = APIRouter(prefix='/general', tags=['general'])
 all_roles_access = RoleAccessService([role for role in Role])
 
-@general_roles_router.get("/me", response_model=UserMeSchema, status_code=status.HTTP_200_OK, dependencies=[Depends(all_roles_access)])
+@general_roles_router.get("/me", response_model=UserMeSchema, status_code=status.HTTP_200_OK)
 async def get_profile(
             request: Request,
             user=Depends(auth_service.authenticate_user)

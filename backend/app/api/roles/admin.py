@@ -13,6 +13,7 @@ from app.services.otp import email_otp_service
 from app.models.users import Role
 from app.services.roles import RoleAccessService
 from app.services.cloudinary import cloudinary
+from app.models.users import Gender, Role
 
 admin_router = APIRouter(prefix='/admin', tags=['admin'])
 get_refresh_token = HTTPBearer()
@@ -26,9 +27,9 @@ async def signup(
             username: EmailStr = Form(...),
             password: str = Form(...),
             full_name: str = Form(...),
-            role: str = Form(...),
+            role: Role = Form(...),
             age: int = Form(...),
-            gender: str = Form(...),
+            gender: Gender = Form(...),
             img_profile: UploadFile = File(...),
             db: AsyncSession = Depends(get_db)
         ):

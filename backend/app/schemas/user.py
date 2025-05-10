@@ -7,7 +7,7 @@ from pydantic import BaseModel, Field, EmailStr, HttpUrl
 from app.models.users import Role, Gender
 
 class UserMeSchema(BaseModel):
-    full_name: Annotated[str, Field(min_length=6, max_length=255)]
+    full_name: str
     email: EmailStr
     role: Role
     age: int

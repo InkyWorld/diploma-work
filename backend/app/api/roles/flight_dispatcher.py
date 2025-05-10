@@ -11,7 +11,7 @@ flight_dispatcher_only_access = RoleAccessService([Role.flight_dispatcher])
 
 flight_dispatcher_router = APIRouter(
     prefix="/flight_dispatcher",
-    tags=["flight_dispatcher"]
+    tags=["flight dispatcher"]
 )
 
 @flight_dispatcher_router.get("/flights_arrival", response_model=List[FutureFlightsResponseSchema], dependencies=[Depends(flight_dispatcher_only_access)], status_code=status.HTTP_200_OK)

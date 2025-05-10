@@ -29,6 +29,7 @@ dependencies = [
     "google-auth-httplib2 (>=0.2.0,<0.3.0)",
     "google-api-python-client (>=2.167.0,<3.0.0)",
     "redis-om (>=0.3.5,<0.4.0)",
+    "orjson (>=3.10.18,<4.0.0)",
 ]
 
 [tool.poetry]

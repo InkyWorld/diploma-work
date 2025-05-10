@@ -15,13 +15,15 @@ from app.api.auth.auth import auth_router
 from app.api.roles.admin import admin_router
 from app.api.general.roles import general_roles_router
 from app.api.general.check import general_check_router
+from app.api.roles.flight_dispatcher import flight_dispatcher_router
+from app.api.roles.engineer import engineer_dispatcher_router
+from app.api.roles.shift_supervisor import shift_supervisor_router
+from app.api.roles.technician import technician_router
 from app.services import RoleAccessService
 from app.db.redis import redis_manager
 from app.repository.user import create_admin
 from app.db.database import sessionmanager
 from app.core import log
-from app.api.roles.flight_dispatcher import flight_dispatcher_router
-from app.api.roles.engineer import engineer_dispatcher_router
 
 admin_access = RoleAccessService([Role.admin])
 
@@ -95,17 +97,14 @@ app.include_router(auth_router, prefix="/api")
 app.include_router(admin_router, prefix="/api")
 app.include_router(general_roles_router, prefix="/api")
 app.include_router(general_check_router, prefix="/api")
-app.include_router(
-    flight_dispatcher_router, prefix="/api", tags=["flight_dispatcher"]
-)
-app.include_router(
-    engineer_dispatcher_router, prefix="/api", tags=["engineer"]
-)
-
+app.include_router(flight_dispatcher_router, prefix="/api")
+app.include_router(engineer_dispatcher_router, prefix="/api")
+app.include_router(technician_router, prefix="/api")
+app.include_router(shift_supervisor_router, prefix="/api")
 
 
 if __name__ == "__main__":
     import uvicorn
     from app.core.utils.get_token import get_token_from_client_token
     get_token_from_client_token()
-    uvicorn.run("main:app", host="0.0.0.0", port=4000, reload=True)
+    uvicorn.run("main:app", host="0.0.0.0", port=5000, reload=True)
