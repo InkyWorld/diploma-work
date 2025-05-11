@@ -40,28 +40,44 @@ async def get_current_events(user_id: int, redis: Redis):
 
 
 async def set_event_done(user: User, event_performance_number_identifier: int, redis: Redis, db: AsyncSession):
+    # Retrieve event data from Redis
     event_bytes = await redis.get(f"workers_set_event:{user.id}:{event_performance_number_identifier}")
-    if event_bytes:
-        event_str = event_bytes.decode("utf-8")
-        event_dict = json.loads(event_str)
-        event_id_str = str(event_dict.get("event_performance_number_identifier"))
+    if not event_bytes:
+        raise ValueError("Event not found in Redis.")  # Generic exception
 
-        query = select(WorkEventCompleted).where(
-            WorkEventCompleted.event_performance_number_identifier == int(event_id_str),
-            WorkEventCompleted.worker_email == user.email
-        )
-        existing_record = await db.scalar(query)
-        if existing_record:
+    event_str = event_bytes.decode("utf-8")
+    event_dict = json.loads(event_str)
+    event_id = event_dict.get("event_performance_number_identifier")
 
-            return existing_record
-        event_completed = WorkEventCompleted(
-            aircraft_name = event_dict.get("aircraft_code"),
-            event_code = event_dict.get("event_code"),
-            event_performance_number_identifier = event_dict.get("event_performance_number_identifier"),
-            worker_full_name = user.full_name,
-            worker_email = user.email,
-        )
-        db.add(event_completed)
-        await db.commit()
-        await db.refresh(event_completed)
-        return event_completed
+    if event_id is None:
+        raise ValueError("Invalid event data.")
+
+    # Check if the event is already completed in the database
+    query = select(WorkEventCompleted).where(
+        WorkEventCompleted.event_performance_number_identifier == event_id,
+        WorkEventCompleted.worker_email == user.email
+    )
+    existing_record = await db.scalar(query)
+    
+    if existing_record:
+        event_dict["completed"] = True
+        await redis.set(f"workers_set_event:{user.id}:{event_id}", json.dumps(event_dict))
+        return existing_record
+
+    # Create and save the completed event record
+    event_completed = WorkEventCompleted(
+        aircraft_name=event_dict.get("aircraft_code"),
+        event_code=event_dict.get("event_code"),
+        event_performance_number_identifier=event_id,
+        worker_full_name=user.full_name,
+        worker_email=user.email,
+    )
+    db.add(event_completed)
+    await db.commit()
+    await db.refresh(event_completed)
+
+    # Mark the event as completed in Redis
+    event_dict["completed"] = True
+    await redis.set(f"workers_set_event:{user.id}:{event_id}", json.dumps(event_dict))
+
+    return event_completed

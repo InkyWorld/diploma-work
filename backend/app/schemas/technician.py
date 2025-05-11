@@ -14,3 +14,4 @@ class ActiveEventSchema(BaseModel):
     event_code: str
     event_display_description: str
     status: str
+    completed: bool

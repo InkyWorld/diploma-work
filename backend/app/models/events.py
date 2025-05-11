@@ -18,6 +18,7 @@ class WorkEvent(HashModel):
     event_display_description: str
     estimated_man_hours: float
     status: str
+    completed: bool = False
 
     class Meta:
         database = redis_manager._redis_client

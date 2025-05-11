@@ -7,7 +7,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.services.roles import RoleAccessService
 from app.models.users import Role, User
-from app.repository.shift_supervisor import get_shift_plan, update_shift_plan, set_worker_on_event as swe, get_workers
 from app.db.redis import get_redis
 from app.db.database import get_db
 from app.schemas.technician import ActiveEventSchema
@@ -25,7 +24,9 @@ async def get_events(user: User = Depends(technician_only_access), redis: Redis 
 
 @technician_router.post("/mark_work_done", status_code=status.HTTP_200_OK)
 async def mark_work_done(event_performance_number_identifier: int, user: User = Depends(technician_only_access), redis: Redis = Depends(get_redis), db:AsyncSession = Depends(get_db)):
-    if await set_event_done(user, event_performance_number_identifier, redis, db):
-        return True
-    else:
-        return False
+    try:
+        return await set_event_done(user, event_performance_number_identifier, redis, db)
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+    except RuntimeError as e:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal Server Error")

@@ -6,7 +6,6 @@ token.json
 client_token.json
 postgres-data
 .git
-requirements.txt
 secrets
 logs
 downloads

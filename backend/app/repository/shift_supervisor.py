@@ -36,6 +36,7 @@ async def get_shift_plan(input_date: date, shift: ShiftEnum, redis: Redis):
             f"shift_plan:{date_key}:{shift}",
             orjson.dumps(serialized, default=lambda o: o.model_dump())
         )
+        await redis.expire(f"shift_plan:{date_key}:{shift}", 86400)
     return shift_plan
 
 
@@ -50,6 +51,7 @@ async def update_shift_plan(input_date: date, shift: ShiftEnum, redis: Redis):
         f"shift_plan:{date_key}:{shift}",
         orjson.dumps(serialized, default=lambda o: o.model_dump())
     )
+    await redis.expire(f"shift_plan:{date_key}:{shift}", 86400)
     return shift_plan
 
 async def get_workers(db: AsyncSession):
