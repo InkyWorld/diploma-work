@@ -36,8 +36,8 @@ file_handlers = {
 class AmosGmailService:
     def __init__(self, scopes):
         self.scopes = scopes
-        self.service = self.authenticate_gmail_api()
         self.credentials = self.get_credentials()
+        self.service = self.authenticate_gmail_api()
 
     
     def get_credentials(self):
