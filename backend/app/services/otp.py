@@ -24,7 +24,7 @@ class Email_OTP:
             TEMPLATE_FOLDER=Path(__file__).parent / 'templates',
         )
 
-    async def send_email(self, email: EmailStr, username: str, host: str):
+    async def __call__(self, email: EmailStr, username: str, host: str):
         """
         Sends an email containing a token verification link to the specified email address.
 

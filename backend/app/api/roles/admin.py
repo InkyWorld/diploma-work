@@ -38,13 +38,14 @@ async def signup(
     if exist_user:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Account already exists")
     
+    if not img_profile:
+        raise HTTPException(status_code=400, detail="File is empty.")
+    
     max_size = 10 * 1024 * 1024  # 5 MB max file size
     allowed_extensions = ['.jpg', '.jpeg', '.png']
+    
     if not any(img_profile.filename.endswith(ext) for ext in allowed_extensions):
         raise HTTPException(status_code=400, detail="Invalid file type. Allowed formats are: jpg, jpeg, png.")
-    
-    if img_profile.size == 0:
-        raise HTTPException(status_code=400, detail="File is empty.")
 
     # Read file in chunks
     current_size = 0
@@ -111,7 +112,6 @@ async def delete_user(
 
 @admin_router.patch("/user", response_model=UserResponseSchema, dependencies=[Depends(admin_only_access)], status_code=status.HTTP_200_OK)
 async def edit_user(
-            bt: BackgroundTasks, 
             request: Request,
             email: EmailStr = Query(..., description="Email of the user to update"),
             password: str | None = Form(None),
