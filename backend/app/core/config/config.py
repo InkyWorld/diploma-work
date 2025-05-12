@@ -7,11 +7,21 @@ from app.models.users import Gender
 from app.core.logger.logger import logger
 from app.core.config.base_config import BASE_DIR
 
-logger.debug(f"BASE_DIR: {BASE_DIR}")
 
 class DBConfig(Settings):
-    DATABASE_URL: str
+    POSTGRES_USER: str = "postgres"
+    POSTGRES_PASSWORD: int = 1234
+    POSTGRES_DB: str = "alphadb"
+    POSTGRES_HOST: str = "db"
+    POSTGRES_PORT: int = 5432
 
+    @property
+    def DATABASE_URL(self) -> str:
+        return (
+            f"postgresql+asyncpg://{self.POSTGRES_USER}:"
+            f"{self.POSTGRES_PASSWORD}@{self.POSTGRES_HOST}:"
+            f"{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
+        )
 
 class JWTConfig(Settings):
     SECRET_KEY: str = "1234567890"

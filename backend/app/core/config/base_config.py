@@ -36,4 +36,9 @@ class Settings(BaseSettings):
 class AppConfig(Settings):
     DEBUG: bool = False
 
+class StartAppConfig(Settings):
+    APP_HOST: str = "0.0.0.0"
+    APP_PORT: int = 8000
+
 app_config = AppConfig()
+start_app_config = StartAppConfig()

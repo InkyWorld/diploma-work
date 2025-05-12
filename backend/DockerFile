@@ -26,8 +26,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the current directory contents into the container at /app
 COPY . /app
 
-# Copy the .env file to the container
-COPY ./.env /app/.env
+COPY --chmod=0644 ./.env /app/
 
 RUN apk add --no-cache postgresql-client
 COPY entrypoint_backend.sh /entrypoint_backend.sh
@@ -36,6 +35,3 @@ RUN chmod +x /entrypoint_backend.sh
 
 # Make port 5000 available to the outside world (you can change this to your app's port)
 EXPOSE 5000
-
-# # Run the application (replace this with your app's entry point)
-# CMD ["python", "-m", "main"]

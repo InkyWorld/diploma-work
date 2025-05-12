@@ -9,6 +9,5 @@ postgres-data
 docker-compose.yml
 README.md
 .dockerignore
-secrets
 logs
 

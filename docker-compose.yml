@@ -3,6 +3,7 @@ services:
     image: redis:8.0-rc1-alpine
     ports:
       - "${REDIS_PORT}:${REDIS_PORT}"
+    restart: always
     environment:
       - REDIS_PASSWORD=${REDIS_PASSWORD}
     command: redis-server --requirepass "${REDIS_PASSWORD}"
@@ -15,6 +16,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "${POSTGRES_PORT}:${POSTGRES_PORT}"
+    restart: always
     volumes:
       - ./postgres-data:/var/lib/postgresql/data:rw
 
@@ -23,10 +25,17 @@ services:
       context: .
       dockerfile: /backend/DockerFile
     ports:
-      - "5000:5000"
+      - "${APP_PORT}:${APP_PORT}"
+    restart: always
     depends_on:
       - redis
       - postgres
     env_file:
-      - ./.env
+      - .env
+    volumes:
+      - logs:/app/logs
     command: /entrypoint_backend.sh
+
+volumes:
+  postgres_data:
+  logs:

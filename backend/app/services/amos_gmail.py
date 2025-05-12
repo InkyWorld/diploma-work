@@ -45,6 +45,7 @@ class AmosGmailService:
             credentials = None
             if os.path.exists(base_config.TOKEN_PATH):
                 credentials = Credentials.from_authorized_user_file(base_config.TOKEN_PATH, self.scopes)
+            log.info(base_config.TOKEN_PATH)
 
             if not credentials or not credentials.valid:
                 log.warning("Credentials are invalid or expired.")
