@@ -1,3 +1,4 @@
+import json
 from typing import List
 from datetime import date, time
 
@@ -59,11 +60,7 @@ async def get_workers(db: AsyncSession):
     users = users.scalars().all()
     return users
 
-async def set_worker_on_event(worker_ids: List[int], event_performance_number_identifier: int, redis: Redis, db: AsyncSession):
-    users = await get_users_by_ids(worker_ids, db)
-    if len(users) != len(worker_ids):
-        missing_ids = set(worker_ids) - {user.id for user in users}
-        raise ValueError(f"Some worker IDs not found in DB: {missing_ids}")
+async def set_worker_on_event(users: List[User], shift, event_performance_number_identifier: int, redis: Redis):
     events = await WorkEvent.find(
         WorkEvent.event_performance_number_identifier == event_performance_number_identifier
     ).all()
@@ -73,5 +70,35 @@ async def set_worker_on_event(worker_ids: List[int], event_performance_number_id
         )
     event = events[0]
     for user in users:
-        await redis.set(f"workers_set_event:{user.id}:{event_performance_number_identifier}", event.model_dump_json())
-        await redis.expire(f"workers_set_event:{user.id}:{event_performance_number_identifier}", 43200)
+        await redis.set(f"workers_set_event:{user.id}:{shift}:{event_performance_number_identifier}", event.model_dump_json())
+        await redis.expire(f"workers_set_event:{user.id}:{shift}:{event_performance_number_identifier}", 43200)
+
+
+async def get_all_events_done(shift: str, redis: Redis):
+    matched_keys = []
+    cursor = "0"
+    while True:
+        cursor, keys = await redis.scan(cursor=cursor, match=f"workers_set_event:*:{shift}:*", count=100)
+        matched_keys.extend(keys)
+        if cursor in (0, "0", b"0"):
+            break
+
+    events_done = []
+    for key in matched_keys:
+        try:
+            data = await redis.get(key)
+            if data is None:
+                continue
+
+            if isinstance(data, bytes):
+                data = data.decode("utf-8")
+            event = json.loads(data)
+
+            if event.get("completed") is True:
+                events_done.append(event)
+        except json.JSONDecodeError:
+            print(f"Warning: Could not decode JSON for key {key}")
+        except Exception as e:
+            print(f"Error processing key {key}: {e}")
+
+    return events_done

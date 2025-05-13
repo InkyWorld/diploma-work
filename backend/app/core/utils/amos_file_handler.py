@@ -83,14 +83,15 @@ class FileDataHandler:
             }
         elif model_class == WorkEvent:
             return {
-                'aircraft_code': row['Ac'],
-                'event_code': row['Event'],
+                'aircraft_code': str(row['Ac']),
+                'event_code': str(row['Event']),
                 'work_package_number_identifier': int(row['wpno_i']),
-                'work_package_number': row['wpno'],
+                'work_package_number': str(row['wpno']),
                 'event_performance_number_identifier': int(row['event_perfno_i']),
-                'event_display_description': row['event_display'],
-                'estimated_man_hours': row['est_mh'],
-                'status': row['status']
+                'event_display_description': str(row['event_display']),
+                'estimated_man_hours': float(row['est_mh']) if row['est_mh'] else 0.0,
+                'status': str(row['status']),
+                "completed": 0,
             }
         elif model_class == WorkPackage:
             return {

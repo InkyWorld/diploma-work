@@ -177,12 +177,12 @@ class Auth:
             raise credentials_exception
         user = await redis.get(f"user:{email}")
         if user is None:
-            await self.get_user_from_db_and_save_to_redis(email, db, redis)
+            user = await self.get_user_from_db_and_save_to_redis(email, db, redis)
         else:
             try:
                 user = pickle.loads(user)
             except Exception:
-                await self.get_user_from_db_and_save_to_redis(email, db, redis)
+                user = await self.get_user_from_db_and_save_to_redis(email, db, redis)
         return user
 
 

@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.events import WorkEventCompleted
 from app.models.users import User
+from app.models.enums import ShiftEnum
 
 async def get_worker_events_keys(worker_id: int, redis: Redis) -> list[str]:
     cursor = 0
@@ -39,9 +40,9 @@ async def get_current_events(user_id: int, redis: Redis):
     return await get_worker_events_data(user_id, redis)
 
 
-async def set_event_done(user: User, event_performance_number_identifier: int, redis: Redis, db: AsyncSession):
+async def set_event_done(user: User, event_performance_number_identifier: int, shift: ShiftEnum, redis: Redis, db: AsyncSession):
     # Retrieve event data from Redis
-    event_bytes = await redis.get(f"workers_set_event:{user.id}:{event_performance_number_identifier}")
+    event_bytes = await redis.get(f"workers_set_event:{user.id}:{shift}:{event_performance_number_identifier}")
     if not event_bytes:
         raise ValueError("Event not found in Redis.")  # Generic exception
 
@@ -61,7 +62,7 @@ async def set_event_done(user: User, event_performance_number_identifier: int, r
     
     if existing_record:
         event_dict["completed"] = True
-        await redis.set(f"workers_set_event:{user.id}:{event_id}", json.dumps(event_dict))
+        await redis.set(f"workers_set_event:{user.id}:{shift}:{event_id}", json.dumps(event_dict))
         return existing_record
 
     # Create and save the completed event record
@@ -78,6 +79,6 @@ async def set_event_done(user: User, event_performance_number_identifier: int, r
 
     # Mark the event as completed in Redis
     event_dict["completed"] = True
-    await redis.set(f"workers_set_event:{user.id}:{event_id}", json.dumps(event_dict))
+    await redis.set(f"workers_set_event:{user.id}:{shift}:{event_id}", json.dumps(event_dict))
 
     return event_completed
