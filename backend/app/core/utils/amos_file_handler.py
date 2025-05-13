@@ -97,7 +97,7 @@ class FileDataHandler:
             return {
                 'package_number_internal': row['wpno_i'],
                 'package_number': row['wpno'],
-                'aircraft_registration': row[' ac_registr'],
+                'aircraft_registration': row['ac_registr'],
                 'station': row['station'],
                 'start_date': int(row['start_date']),
                 'start_time': int(row['start_time']),

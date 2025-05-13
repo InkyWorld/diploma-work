@@ -1,5 +1,4 @@
 from typing import List
-from datetime import date, datetime
 
 from fastapi import APIRouter, Depends, Query, HTTPException, status
 from redis.asyncio import Redis
