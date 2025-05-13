@@ -3,7 +3,7 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import API_URL from "../../config";
 import Loader from "../../components/Loader";
-import { setAccessToken, setRole } from "../../redux/slices/authSlice";
+import { setAccessToken, setCurrentUser, setRole } from "../../redux/slices/authSlice";
 
 export default function AuthProvider({ children }) {
   console.log("AUTH PROVIDER");
@@ -48,11 +48,14 @@ export default function AuthProvider({ children }) {
             Authorization: `Bearer ${data.access_token}`,
           },
         });
+        console.log("meResponse", meResponse);
 
         if (!meResponse.ok) throw new Error("Failed to fetch me");
 
         const meData = await meResponse.json();
-        console.log(meData.role);
+        console.log(meData);
+        //TODO: Запис даних поточного користувача в Redux
+        dispatch(setCurrentUser(meData));
         //TODO: Запис role в Redux
         dispatch(setRole(meData.role));
       } catch (error) {

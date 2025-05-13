@@ -18,8 +18,7 @@ function RequireAuth({ allowedRoles }) {
 
   return (
     <>
-      {console.log("OUTLET")}
-      <div className="fixed top-0 bg-red-400">Protected route</div>
+      {/* <div className="fixed top-0 bg-red-400">Protected route</div> */}
       <Outlet />
     </>
   );

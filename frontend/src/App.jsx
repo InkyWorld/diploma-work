@@ -8,7 +8,6 @@ import NotFound from "./pages/NotFound";
 import RequireAuth from "./features/auth/RequireAuth";
 import EngineerPage from "./pages/EngineerPage";
 import ForemanDashboard from "./pages/ShiftSupervisorPage";
-import DispatcherPage from "./pages/DispatcherPage";
 import AssignTaskPage from "./pages/AssignTaskPage";
 import WorkerDashboard from "./pages/TechnicianPage";
 import WorkerTaskDetail from "./pages/WorkerTaskDetail";
@@ -20,6 +19,8 @@ import CreateUserPage from "./pages/admin/CreateUserPage";
 
 import AuthProvider from "./features/auth/AuthProvider";
 import { useSelector } from "react-redux";
+import Home from "./pages/Home";
+import DispatcherDataPage from "./pages/flight-dispatcher/DispatcherDataPage";
 
 function App() {
   console.log("app init");
@@ -33,6 +34,7 @@ function App() {
         <Routes>
           {/* Загальні сторінки */}
           <Route path="/" element={<Navigate to="/login" replace />} />
+          <Route path="/home" element={<Home />} />
           {/* <Route path="/" element={role ? <Navigate to={`/${role}`} replace /> : <Navigate to="/login" replace />} /> */}
           {/* <Route path="/" element={<Welcome />} /> */}
           <Route path="/login" element={<LoginPage />} />
@@ -70,7 +72,7 @@ function App() {
 
           <Route element={<RequireAuth allowedRoles={["flight dispatcher"]} />}>
             <Route path="/flight-dispatcher" element={<ProtectedPageLayout />}>
-              <Route index element={<DispatcherPage />} />
+              <Route index element={<DispatcherDataPage />} />
             </Route>
           </Route>
 

@@ -1,27 +1,30 @@
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Outlet } from "react-router-dom";
 import { logout } from "../redux/slices/authSlice";
+import Header from "../components/Header";
 
 function ProtectedPageLayout() {
-  // const dispatch = useDispatch();
+  const currentUser = useSelector((state) => state.auth.currentUser);
+  console.log("ProtectedPageLayout", currentUser);
   const dispatch = useDispatch();
+
+  function handleLogout() {
+    dispatch(logout());
+    localStorage.removeItem("refresh_token");
+  }
+
   return (
     <div className="flex flex-col h-full w-full bg-white">
-      <header className="bg-gray-600 text-white p-4 text-xl font-semibold flex justify-between">
+      <Header userName={currentUser.full_name} userRole={currentUser.role} onLogout={handleLogout} />
+      {/* <header className="bg-gray-600 text-white p-4 text-xl font-semibold flex justify-between">
         <h1 className="text-lg font-semibold">Header</h1>
         <div className="flex items-center gap-4">
           <span>👤 Ім’я користувача</span>
-          <button
-            className="bg-rose-400 hover:bg-rose-500 text-white px-4 py-1 rounded"
-            onClick={() => {
-              dispatch(logout());
-              localStorage.removeItem("refresh_token");
-            }}
-          >
+          <button className="bg-rose-400 hover:bg-rose-500 text-white px-4 py-1 rounded" onClick={() => handleLogout()}>
             Вийти
           </button>
         </div>
-      </header>
+      </header> */}
 
       <div className="flex flex-1 overflow-hidden">
         {/* <aside className="w-32 bg-white shadow-md p-4 overflow-y-auto md:w-64">
