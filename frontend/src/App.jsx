@@ -8,7 +8,7 @@ import NotFound from "./pages/NotFound";
 import RequireAuth from "./features/auth/RequireAuth";
 import EngineerPage from "./pages/EngineerPage";
 import ForemanDashboard from "./pages/ShiftSupervisorPage";
-import AssignTaskPage from "./pages/AssignTaskPage";
+
 import WorkerDashboard from "./pages/TechnicianPage";
 import WorkerTaskDetail from "./pages/WorkerTaskDetail";
 import TestPage from "./pages/TestPage";
@@ -21,6 +21,12 @@ import AuthProvider from "./features/auth/AuthProvider";
 import { useSelector } from "react-redux";
 import Home from "./pages/Home";
 import DispatcherDataPage from "./pages/flight-dispatcher/DispatcherDataPage";
+import EngineerPackagesPage from "./pages/engineer/EngineerPackagesPage";
+import EngineerAllEvents from "./pages/engineer/EngineerAllEvents";
+import AssignWorkersPage from "./pages/shift-supervisor/AssignWorkersPage";
+import SupervisorDashboard from "./pages/shift-supervisor/SupervisorDashboard";
+import TurnaroundDetails from "./pages/shift-supervisor/TurnarounDetails";
+import ScrollToTop from "./components/ScrollToTop";
 
 function App() {
   console.log("app init");
@@ -31,6 +37,7 @@ function App() {
     // <div className="container w-full h-screen bg-amber-50">
     <div className="wrapper">
       <AuthProvider>
+        <ScrollToTop />
         <Routes>
           {/* Загальні сторінки */}
           <Route path="/" element={<Navigate to="/login" replace />} />
@@ -66,7 +73,9 @@ function App() {
 
           <Route element={<RequireAuth allowedRoles={["engineer"]} />}>
             <Route path="/engineer" element={<ProtectedPageLayout />}>
-              <Route index element={<EngineerPage />} />
+              {/* <Route index element={<EngineerPage />} /> */}
+              <Route index element={<EngineerPackagesPage />} />
+              <Route path="events-all" element={<EngineerAllEvents />} />
             </Route>
           </Route>
 
@@ -78,7 +87,12 @@ function App() {
 
           <Route element={<RequireAuth allowedRoles={["shift supervisor"]} />}>
             <Route path="/shift-supervisor" element={<ProtectedPageLayout />}>
-              <Route index element={<ForemanDashboard />} />
+              {/* <Route index element={<ForemanDashboard />} /> */}
+              <Route index element={<SupervisorDashboard />} />
+              <Route path="turnaround/:turnaroundId" element={<TurnaroundDetails />} />
+              {/* <Route path="turnaround:turnaroundId" element={<TurnaroundDetails />} /> */}
+              {/* <Route path="turnaround/:id/assign-tasks/:taskId" element={<AssignWorkersPage />} /> */}
+              <Route path="turnaround/:turnaroundId/package/:packageId/task/:taskId" element={<AssignWorkersPage />} />
             </Route>
           </Route>
 

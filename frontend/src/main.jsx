@@ -7,6 +7,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { store } from "./redux/store.js";
 import "./index.css";
+import ScrollToTop from "./components/ScrollToTop.jsx";
 
 const queryClient = new QueryClient();
 

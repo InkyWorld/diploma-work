@@ -14,7 +14,7 @@ function ProtectedPageLayout() {
   }
 
   return (
-    <div className="flex flex-col h-full w-full bg-white">
+    <div className="flex flex-col h-full w-full bg-gray-100">
       <Header userName={currentUser.full_name} userRole={currentUser.role} onLogout={handleLogout} />
       {/* <header className="bg-gray-600 text-white p-4 text-xl font-semibold flex justify-between">
         <h1 className="text-lg font-semibold">Header</h1>

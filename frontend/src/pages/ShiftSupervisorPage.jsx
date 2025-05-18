@@ -1,3 +1,5 @@
+import ShiftPlan from "./shift-supervisor/ShiftPlan";
+
 const testData = {
   date: "2025-04-21",
   workers: [
@@ -92,37 +94,7 @@ const ForemanDashboard = () => {
         </button>
       </div>
 
-      <div className="bg-white shadow p-6 rounded-2xl overflow-x-auto">
-        <h2 className="text-xl font-bold mb-4">Список працівників</h2>
-        <table className="min-w-full text-sm text-left border border-gray-300">
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="p-3 border-b">Ім’я</th>
-              <th className="p-3 border-b">Зміна</th>
-              <th className="p-3 border-b">Активний</th>
-              <th className="p-3 border-b">Завдань сьогодні</th>
-              <th className="p-3 border-b">Завдань за тиждень</th>
-            </tr>
-          </thead>
-          <tbody>
-            {testData.workers.map((worker) => (
-              <tr key={worker.id} className="hover:bg-gray-50">
-                <td className="p-3 border-b">{worker.name}</td>
-                <td className="p-3 border-b capitalize">{worker.shift}</td>
-                <td className="p-3 border-b">
-                  {worker.active ? (
-                    <span className="text-green-600 font-semibold">Так</span>
-                  ) : (
-                    <span className="text-red-500">Ні</span>
-                  )}
-                </td>
-                <td className="p-3 border-b">{worker.completed_tasks_today}</td>
-                <td className="p-3 border-b">{worker.completed_tasks_week}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <ShiftPlan />
     </div>
   );
 };
