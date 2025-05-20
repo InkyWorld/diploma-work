@@ -1,32 +1,38 @@
 import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
-import Welcome from "./pages/Welcome";
+import { useSelector } from "react-redux";
+import { Toaster } from "react-hot-toast";
+
+import AuthProvider from "./features/auth/AuthProvider";
+import RequireAuth from "./features/auth/RequireAuth";
+import ProtectedPageLayout from "./layouts/ProtectedPageLayout";
 import LoginPage from "./pages/LoginPage";
-import AdminPage from "./pages/admin/AdminPage";
+import Home from "./pages/Home";
 import Forbidden from "./pages/Forbidden";
 import NotFound from "./pages/NotFound";
+import ScrollToTop from "./components/ScrollToTop";
 
-import RequireAuth from "./features/auth/RequireAuth";
-import EngineerPage from "./pages/EngineerPage";
-import ForemanDashboard from "./pages/ShiftSupervisorPage";
-
-import WorkerDashboard from "./pages/TechnicianPage";
-import WorkerTaskDetail from "./pages/WorkerTaskDetail";
+import Welcome from "./pages/Welcome";
 import TestPage from "./pages/TestPage";
-import ProtectedPageLayout from "./layouts/ProtectedPageLayout";
-import UserForm from "./components/UserForm";
+
+//? ADMIN
+import AdminPage from "./pages/admin/AdminPage";
 import EditUserPage from "./pages/admin/EditUserPage";
 import CreateUserPage from "./pages/admin/CreateUserPage";
 
-import AuthProvider from "./features/auth/AuthProvider";
-import { useSelector } from "react-redux";
-import Home from "./pages/Home";
-import DispatcherDataPage from "./pages/flight-dispatcher/DispatcherDataPage";
-import EngineerPackagesPage from "./pages/engineer/EngineerPackagesPage";
-import EngineerAllEvents from "./pages/engineer/EngineerAllEvents";
-import AssignWorkersPage from "./pages/shift-supervisor/AssignWorkersPage";
+//? TECHNICIAN
+import WorkerDashboard from "./pages/technician/TechnicianPage";
+
+//? SHIFT-SUPERVISOR
 import SupervisorDashboard from "./pages/shift-supervisor/SupervisorDashboard";
 import TurnaroundDetails from "./pages/shift-supervisor/TurnarounDetails";
-import ScrollToTop from "./components/ScrollToTop";
+import AssignWorkersPage from "./pages/shift-supervisor/AssignWorkersPage";
+
+//? DISPATCHER
+import DispatcherDataPage from "./pages/flight-dispatcher/DispatcherDataPage";
+
+//? ENGINEER
+import EngineerPackagesPage from "./pages/engineer/EngineerPackagesPage";
+import EngineerAllEvents from "./pages/engineer/EngineerAllEvents";
 
 function App() {
   console.log("app init");
@@ -38,6 +44,8 @@ function App() {
     <div className="wrapper">
       <AuthProvider>
         <ScrollToTop />
+        <Toaster />
+
         <Routes>
           {/* Загальні сторінки */}
           <Route path="/" element={<Navigate to="/login" replace />} />
@@ -54,28 +62,13 @@ function App() {
               <Route index element={<AdminPage />} />
               <Route path="users/edit/:id" element={<EditUserPage />} />
               <Route path="users/create" element={<CreateUserPage />} />
-
-              {/* <Route index element={<Navigate to="users" />} />
-            <Route path="users" element={<AdminPage />} /> */}
-              {/* <Route path="tasks" element={<UserForm />} /> */}
-              {/* <Route path="tasks" element={<EngineerPage />} /> */}
-              {/* <Route path="tasks" element={<DispatcherPage />} /> */}
-
-              <Route path="tasks" element={<ForemanDashboard />} />
-              {/* <Route path="tasks" element={<AssignTaskPage />} /> */}
-              {/* <Route path="tasks" element={<WorkerDashboard />} /> */}
-              {/* <Route path="tasks" element={<WorkerTaskDetail />} /> */}
-
-              {/* <Route path="users" element={<UserList />} /> */}
-              {/* <Route path="users/:id/edit" element={<EditUser />} /> */}
             </Route>
           </Route>
 
           <Route element={<RequireAuth allowedRoles={["engineer"]} />}>
             <Route path="/engineer" element={<ProtectedPageLayout />}>
-              {/* <Route index element={<EngineerPage />} /> */}
               <Route index element={<EngineerPackagesPage />} />
-              <Route path="events-all" element={<EngineerAllEvents />} />
+              <Route path="eventsAll" element={<EngineerAllEvents />} />
             </Route>
           </Route>
 
@@ -87,11 +80,8 @@ function App() {
 
           <Route element={<RequireAuth allowedRoles={["shift supervisor"]} />}>
             <Route path="/shift-supervisor" element={<ProtectedPageLayout />}>
-              {/* <Route index element={<ForemanDashboard />} /> */}
               <Route index element={<SupervisorDashboard />} />
               <Route path="turnaround/:turnaroundId" element={<TurnaroundDetails />} />
-              {/* <Route path="turnaround:turnaroundId" element={<TurnaroundDetails />} /> */}
-              {/* <Route path="turnaround/:id/assign-tasks/:taskId" element={<AssignWorkersPage />} /> */}
               <Route path="turnaround/:turnaroundId/package/:packageId/task/:taskId" element={<AssignWorkersPage />} />
             </Route>
           </Route>
@@ -99,7 +89,6 @@ function App() {
           <Route element={<RequireAuth allowedRoles={["technician"]} />}>
             <Route path="/technician" element={<ProtectedPageLayout />}>
               <Route index element={<WorkerDashboard />} />
-              {/* <Route index element={<WorkerTaskDetail />} /> */}
             </Route>
           </Route>
 

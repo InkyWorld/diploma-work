@@ -31,7 +31,7 @@ export default function SupervisorDashboard() {
 
       {/* 📦 Shift план */}
       <ShiftPlan />
-      {/* <ShiftPlanSection shiftType={shiftType} date={selectedDate} /> */}
+      {/* <ShiftPlanSection /> */}
     </div>
   );
 }

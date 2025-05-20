@@ -15,13 +15,14 @@ async function getShiftPlan({ queryKey }) {
   if (!res.ok) throw new Error("Failed to fetch shift plan");
   const data = await res.json();
   // console.log("shift plan data", data);
-  const id = data.map((data) => [
-    data.turnaround.arrived_date,
-    data.turnaround.arrived_flight_name,
-    data.turnaround.aircraft,
-    data.turnaround.next_departure_flight_name,
-  ]);
-  console.log("packages", id);
+
+  // const id = data.map((data) => [
+  //   data.turnaround.arrived_date,
+  //   data.turnaround.arrived_flight_name,
+  //   data.turnaround.aircraft,
+  //   data.turnaround.next_departure_flight_name,
+  // ]);
+  // console.log("packages", id);
 
   return data;
 }

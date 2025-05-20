@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { useLocation, useParams, useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import getShiftPlan from "../../services/shift-supervisor/getShiftPlan";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import Loader from "../../components/Loader";
 import getAllWorkers from "../../services/shift-supervisor/getAllWorkers";
 import assignWorkersToTask from "../../services/shift-supervisor/assignWorkersToTask";
+import { toast } from "react-hot-toast";
 
 const mockWorkers = [
   {
@@ -41,6 +42,7 @@ function shortWorkerName(fullName) {
 export default function AssignWorkersPage() {
   const { packageId, taskId, turnaroundId } = useParams();
   // console.log(packageId, taskId, turnaroundId);
+  const navigate = useNavigate();
 
   const [searchParams] = useSearchParams();
   const date = searchParams.get("date");
@@ -70,6 +72,8 @@ export default function AssignWorkersPage() {
     onSuccess: (response, formParams) => {
       console.log("Завдання присвоєно:", response);
       console.log("Що передали в mutate:", formParams);
+      toast.success(`Завдання ${formParams.eventId} призначено для виконання`);
+      navigate(-1);
       // queryClient.invalidateQueries({ queryKey: ["shiftPlan", formParams] });
     },
   });
@@ -100,8 +104,6 @@ export default function AssignWorkersPage() {
 
   function handleSubmit() {
     console.log("Призначено працівників:", assignedWorkersIds);
-    // Тут ти викликаєш API: PATCH /assign-task-to-workers
-    // mutate(currentEvent.event_performance_number_identifier, shift, assignedWorkersIds);
     mutate({ eventId: currentEvent.event_performance_number_identifier, shift: shift, workersIds: assignedWorkersIds });
   }
 
@@ -190,7 +192,8 @@ export default function AssignWorkersPage() {
 
       <button
         onClick={handleSubmit}
-        className="w-full mt-6 px-6 py-2 font-semibold bg-blue-600 text-white rounded-md hover:bg-blue-700"
+        disabled={isPending || !assignedWorkersIds.length}
+        className="w-full mt-6 px-6 py-2 font-semibold bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
       >
         Призначити вибраних працівників
       </button>

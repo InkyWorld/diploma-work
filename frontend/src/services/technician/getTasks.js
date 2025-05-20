@@ -7,8 +7,7 @@ async function getTasks() {
   console.log("tasks res", res);
   if (!res.ok) throw new Error("Failed to fetch tasks");
   const data = await res.json();
-  console.log("tasks", data);
-
+  // console.log("tasks", data);
   return data;
 }
 

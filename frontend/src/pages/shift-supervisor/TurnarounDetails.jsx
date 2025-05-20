@@ -4,6 +4,7 @@ import { Link, useParams, useSearchParams } from "react-router-dom";
 import getShiftPlan from "../../services/shift-supervisor/getShiftPlan";
 import { useQuery } from "@tanstack/react-query";
 import Loader from "../../components/Loader";
+import getAllDoneTasks from "../../services/shift-supervisor/getAllDoneTasks";
 
 const TurnaroundDetails = () => {
   const { turnaroundId: id } = useParams();
@@ -25,7 +26,14 @@ const TurnaroundDetails = () => {
     cacheTime: 1000 * 60 * 10, // 10 хвилин у кеші
   });
 
-  if (isLoading) return <Loader />;
+  const { data: doneTasks, isLoading: isLoadingDoneTasks } = useQuery({
+    queryKey: ["doneTasks", shift],
+    queryFn: getAllDoneTasks,
+    // staleTime: 1000 * 60 * 5, // 5 хвилин
+    cacheTime: 1000 * 60 * 10, // 10 хвилин у кеші
+  });
+
+  if (isLoading || isLoadingDoneTasks) return <Loader />;
 
   const normalize = (value) => (value === "null" ? null : value);
 
@@ -100,39 +108,72 @@ const TurnaroundDetails = () => {
               <p className="text-gray-500 italic">Завдань немає</p>
             ) : (
               <div className="grid gap-4">
-                {wp.events.map((event, evIdx) => (
-                  <div key={evIdx} className="border border-gray-200 rounded-md p-3 bg-gray-100">
-                    <p>
-                      <span className="font-semibold ">Ідентифікаційний номер події:</span>{" "}
-                      {event.event_performance_number_identifier}
-                    </p>
-                    <p>
-                      <span className="font-semibold">Код події:</span> {event.event_code}
-                    </p>
-                    <p>
-                      <span className="font-semibold">Опис:</span> {event.event_display_description}
-                    </p>
-                    <p>
-                      <span className="font-semibold">Людино-години:</span> {event.estimated_man_hours}
-                    </p>
-                    <p>
-                      <span className="font-semibold">Статус:</span> {event.status}
-                    </p>
-                    <p>
-                      <span className="font-semibold">Виконано:</span> {event.completed ? "Так" : "Ні"}
-                    </p>
-                    <Link
-                      // to={`package/${wp.package_number_internal}/task/${event.event_performance_number_identifier}`}
-                      to={{
-                        pathname: `package/${wp.package_number_internal}/task/${event.event_performance_number_identifier}`,
-                        search: `?${searchParams.toString()}`,
-                      }}
-                      className="mt-2 inline-block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                    >
-                      Призначити працівників
-                    </Link>
-                  </div>
-                ))}
+                {wp.events.map((event, evIdx) => {
+                  // Перевірка чи це завдання виконане
+                  const isDone = doneTasks?.some(
+                    (done) =>
+                      +done.event_performance_number_identifier === +event.event_performance_number_identifier &&
+                      +done.work_package_number_identifier === +wp.package_number_internal // або інший відповідний ідентифікатор
+                  );
+                  if (isDone) {
+                    return (
+                      <div key={evIdx} className="border border-green-400 rounded-md p-3 bg-green-100">
+                        <p>
+                          <span className="font-semibold">Ідентифікаційний номер події:</span>{" "}
+                          {event.event_performance_number_identifier}
+                        </p>
+                        <p>
+                          <span className="font-semibold">Код події:</span> {event.event_code}
+                        </p>
+                        <p>
+                          <span className="font-semibold">Опис:</span> {event.event_display_description}
+                        </p>
+                        <p>
+                          <span className="font-semibold">Людино-години:</span> {event.estimated_man_hours}
+                        </p>
+                        <p>
+                          <span className="font-semibold">Статус:</span> {event.status}
+                        </p>
+                        <p>
+                          <span className="font-semibold text-green-700">Виконано</span>
+                        </p>
+                      </div>
+                    );
+                  }
+                  // Якщо не виконане — як було
+                  return (
+                    <div key={evIdx} className="border border-gray-200 rounded-md p-3 bg-gray-100">
+                      <p>
+                        <span className="font-semibold ">Ідентифікаційний номер події:</span>{" "}
+                        {event.event_performance_number_identifier}
+                      </p>
+                      <p>
+                        <span className="font-semibold">Код події:</span> {event.event_code}
+                      </p>
+                      <p>
+                        <span className="font-semibold">Опис:</span> {event.event_display_description}
+                      </p>
+                      <p>
+                        <span className="font-semibold">Людино-години:</span> {event.estimated_man_hours}
+                      </p>
+                      <p>
+                        <span className="font-semibold">Статус:</span> {event.status}
+                      </p>
+                      <p>
+                        <span className="font-semibold">Виконано:</span> {event.completed ? "Так" : "Ні"}
+                      </p>
+                      <Link
+                        to={{
+                          pathname: `package/${wp.package_number_internal}/task/${event.event_performance_number_identifier}`,
+                          search: `?${searchParams.toString()}`,
+                        }}
+                        className="mt-2 inline-block font-semibold bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                      >
+                        Призначити працівників
+                      </Link>
+                    </div>
+                  );
+                })}
               </div>
             )}
           </div>
