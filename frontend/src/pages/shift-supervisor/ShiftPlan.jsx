@@ -322,7 +322,8 @@ const ShiftPlan = () => {
                 {packages.map((pack, idx) => (
                   <div key={idx} className="bg-gray-50 p-2 rounded-md border border-gray-200 mb-2">
                     <p>Пакет №: {pack.package_number}</p>
-                    <p>Заплановане завершення: {pack.planned_end_date ?? "—"}</p>
+                    <p>Дата завершення: {pack.end_date ?? "—"}</p>
+                    <p>Час завершення: {pack.end_time ?? "—"}</p>
                     <p>Кількість завдань: {pack.events?.length ?? 0}</p>
                   </div>
                 ))}
@@ -330,12 +331,6 @@ const ShiftPlan = () => {
 
               {/* Detail Button */}
               <Link
-                // to={`turnaround/${createKey([
-                //   turnaround.arrived_date,
-                //   turnaround.arrived_flight_name,
-                //   turnaround.aircraft,
-                //   turnaround.next_departure_flight_name,
-                // ])}`}
                 to={{
                   pathname: `turnaround/${createKey([
                     turnaround.arrived_date,

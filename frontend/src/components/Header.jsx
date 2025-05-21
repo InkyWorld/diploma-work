@@ -1,13 +1,8 @@
 import { FaPlane } from "react-icons/fa";
 import { FiLogOut, FiSettings, FiSun } from "react-icons/fi";
+import { shortWorkerName } from "../helpers/helpers";
 
 const Header = ({ userName, userRole, onLogout }) => {
-  const initials = userName
-    .split(" ")
-    .map((word) => word[0])
-    .join("")
-    .toUpperCase();
-
   return (
     // <header className="w-full flex items-center justify-between px-6 py-3 bg-gradient-to-br from-blue-400 via-blue-200 to-blue-400 text-white shadow-md">
     <header className="w-full flex items-center justify-between px-6 py-3 bg-gray-500 text-white shadow-md">
@@ -24,8 +19,7 @@ const Header = ({ userName, userRole, onLogout }) => {
       <div className="flex items-center gap-4">
         {/* Ініціали */}
         <div className="bg-white text-black px-2 py-0.5 rounded-4xl flex items-center justify-center font-bold shadow-inner">
-          {/* {initials} */}
-          Федорчук.О.Л
+          {shortWorkerName(userName)}
         </div>
 
         {/* Іконки: налаштування, тема */}

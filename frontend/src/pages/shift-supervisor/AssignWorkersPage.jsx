@@ -6,6 +6,9 @@ import Loader from "../../components/Loader";
 import getAllWorkers from "../../services/shift-supervisor/getAllWorkers";
 import assignWorkersToTask from "../../services/shift-supervisor/assignWorkersToTask";
 import { toast } from "react-hot-toast";
+import ButtonBack from "../../components/ButtonBack";
+import EventCard from "../../components/EventCard";
+import { shortWorkerName } from "../../helpers/helpers";
 
 const mockWorkers = [
   {
@@ -31,13 +34,14 @@ const mockTask = {
   estimated_man_hours: 2,
   completed: false,
 };
-function shortWorkerName(fullName) {
-  const nameWords = fullName.split(" ");
-  if (nameWords.length < 3) return fullName;
-  else {
-    return [nameWords[0], nameWords[1].slice(0, 1) + ".", nameWords[2].slice(0, 1) + "."].join(" ");
-  }
-}
+
+// function shortWorkerName(fullName) {
+//   const nameWords = fullName.split(" ");
+//   if (nameWords.length < 3) return fullName;
+//   else {
+//     return [nameWords[0], nameWords[1].slice(0, 1) + ".", nameWords[2].slice(0, 1) + "."].join(" ");
+//   }
+// }
 
 export default function AssignWorkersPage() {
   const { packageId, taskId, turnaroundId } = useParams();
@@ -109,30 +113,14 @@ export default function AssignWorkersPage() {
 
   return (
     <div className="max-w-4xl mx-auto p-4">
+      <ButtonBack />
       <h2 className="text-2xl font-bold mb-4 text-center">
         Деталі завдання #{currentEvent.event_performance_number_identifier}
       </h2>
 
-      <div className="bg-white border border-gray-200 shadow-sm rounded-lg p-4 mb-6">
-        <p>
-          <span className="font-semibold">Ідентифікаційний номер події:</span>{" "}
-          {currentEvent.event_performance_number_identifier}
-        </p>
-        <p>
-          <span className="font-semibold">Код події:</span> {currentEvent.event_code}
-        </p>
-        <p>
-          <span className="font-semibold">Опис:</span> {currentEvent.event_display_description}
-        </p>
-        <p>
-          <span className="font-semibold">Людино-години:</span> {currentEvent.estimated_man_hours}
-        </p>
-        <p>
-          <span className="font-semibold">Статус:</span> {currentEvent.completed ? "Виконано" : "Не виконано"}
-        </p>
-      </div>
+      <EventCard data={currentEvent} />
 
-      <h3 className="text-xl font-semibold mb-3">Оберіть працівників для призначення на завдання:</h3>
+      <h3 className="text-xl font-semibold my-3">Оберіть працівників для призначення на завдання:</h3>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         {workers.map((worker) => (
           <div
@@ -152,43 +140,6 @@ export default function AssignWorkersPage() {
           </div>
         ))}
       </div>
-      {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {workers.map((worker) => {
-          // Скорочення імені до "Прізвище І.Б."
-          const nameParts = worker.full_name.trim().split(" ");
-          let displayName = worker.full_name;
-          if (nameParts.length === 3) {
-            displayName = `${nameParts[2]} ${nameParts[0][0]}.${nameParts[1][0]}.`;
-          }
-
-          const isAssigned = assignedWorkerIds.includes(worker.id);
-
-          return (
-            <div
-              key={worker.id}
-              onClick={() => handleAssignWorker(worker.id)}
-              className={`relative bg-white shadow-lg rounded-xl p-5 flex flex-col items-center transition border-2 ${
-                isAssigned
-                  ? "border-green-500 ring-2 ring-green-200"
-                  : "border-gray-200 hover:border-blue-400 hover:shadow-xl"
-              } cursor-pointer group`}
-            >
-              <p className="font-bold text-lg text-center mb-1">{displayName}</p>
-              <p className="text-sm text-gray-500 text-center mb-3">{worker.email}</p>
-              <button
-                type="button"
-                className={`mt-auto px-4 py-1 rounded-full text-sm font-semibold transition ${
-                  isAssigned
-                    ? "bg-green-500 text-white"
-                    : "bg-gray-100 text-gray-700 group-hover:bg-blue-600 group-hover:text-white"
-                }`}
-              >
-                {isAssigned ? "Обрано" : "Обрати"}
-              </button>
-            </div>
-          );
-        })}
-      </div> */}
 
       <button
         onClick={handleSubmit}

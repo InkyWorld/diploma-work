@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import addUser from "../../services/admin/addUser";
-import TestComponent from "../../components/TestComponent";
 import { useNavigate } from "react-router-dom";
-import UserForm from "../../components/UserForm";
+import UserForm from "../../features/admin/UserForm";
+import toast from "react-hot-toast";
 
 function CreateUserPage() {
   const queryClient = useQueryClient();
@@ -11,14 +11,14 @@ function CreateUserPage() {
     mutationFn: ({ finalData }) => addUser(finalData),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users"] });
-      console.log("User successfully added");
       navigate("/admin");
+      // console.log("User successfully added");
+      toast.success("User successfully added");
     },
     onError: (error) => {
       console.error(error);
     },
   });
-  // return <TestComponent mutate={mutate} isPending={isPending} />;
   return <UserForm mutate={mutate} isPending={isPending} />;
 }
 

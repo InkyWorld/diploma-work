@@ -25,10 +25,12 @@ function Home() {
 
   return (
     // <div className="min-h-screen bg-white p-4 sm:p-8 flex items-center justify-center overflow-y-auto">
-    <div className="h-screen bg-white p-4 sm:p-8 lg:flex lg:items-center lg:justify-center overflow-y-scroll">
-      <div className="mx-auto space-y-6">
+    <div className="relative bg-[url('https://www.publicdomainpictures.net/pictures/370000/nahled/himmel-wolken-wetter-hintergrund-1601102999r1t.jpg')] bg-cover bg-center h-screen  p-4 sm:p-8 lg:flex lg:items-center lg:justify-center overflow-y-scroll">
+      {/* <div className="relative bg-[url('https://images.cnscdn.com/6/0/4/b/604b5cc948cbb2299cb0a69133771570/original.jpg')] bg-cover bg-center h-screen  p-4 sm:p-8 lg:flex lg:items-center lg:justify-center overflow-y-scroll"> */}
+      {/* <div class="absolute inset-0 "></div> */}
+      <div className="bg-white/70 rounded-lg p-6 mx-auto space-y-6">
         {/* Вступний блок */}
-        <div className="rounded-2xl px-6 text-center">
+        <div className="p-4 rounded-2xl px-6 text-center">
           <h2 className="text-2xl sm:text-3xl font-bold text-black mb-2">
             Ласкаво просимо до системи управління авіаційним обслуговуванням
           </h2>
@@ -43,7 +45,7 @@ function Home() {
 
         {/* Блоки переваг */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 justify-center">
-          <div className=" bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition">
+          <div className=" bg-white/50 p-6 rounded-xl shadow-md hover:shadow-lg transition">
             <h4 className="text-lg font-semibold text-black mb-2">🚀 Оптимізація роботи</h4>
             <p className="text-gray-700 mb-2">Зменшення часу на виконання завдань.</p>
             <ul className="list-disc list-inside text-gray-600 space-y-1">
@@ -53,7 +55,7 @@ function Home() {
             </ul>
           </div>
 
-          <div className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition">
+          <div className="bg-white/50 p-6 rounded-xl shadow-md hover:shadow-lg transition">
             <h4 className="text-lg font-semibold text-black mb-2">⏱ Контроль часу</h4>
             <p className="text-gray-700 mb-2">Відстеження виконання в реальному часі.</p>
             <ul className="list-disc list-inside text-gray-600 space-y-1">
@@ -63,7 +65,7 @@ function Home() {
             </ul>
           </div>
 
-          <div className="hidden lg:block bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition">
+          <div className="hidden lg:block bg-white/50 p-6 rounded-xl shadow-md hover:shadow-lg transition">
             <h4 className="text-lg font-semibold text-black mb-2">✅ Управління процесами</h4>
             <p className="text-gray-700 mb-2">Координація робіт усіх учасників.</p>
             <ul className="list-disc list-inside text-gray-600 space-y-1">
@@ -93,6 +95,7 @@ function Home() {
         </div>
       </div>
     </div>
+    // </div>
   );
 }
 

@@ -5,6 +5,9 @@ import getShiftPlan from "../../services/shift-supervisor/getShiftPlan";
 import { useQuery } from "@tanstack/react-query";
 import Loader from "../../components/Loader";
 import getAllDoneTasks from "../../services/shift-supervisor/getAllDoneTasks";
+import { AiOutlineCalendar, AiOutlineClockCircle } from "react-icons/ai";
+import ButtonBack from "../../components/ButtonBack";
+import EventCard from "../../components/EventCard";
 
 const TurnaroundDetails = () => {
   const { turnaroundId: id } = useParams();
@@ -49,6 +52,7 @@ const TurnaroundDetails = () => {
 
   return (
     <div className="max-w-5xl mx-auto p-4 sm:p-6 lg:p-8">
+      <ButtonBack />
       <h1 className="text-3xl font-bold mb-6 text-center">Деталі Turnaround</h1>
 
       {/* Turnaround Info */}
@@ -57,23 +61,23 @@ const TurnaroundDetails = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Arrival Block */}
-          <div className="border border-gray-200 rounded-md p-4">
-            <h3 className="text-lg font-semibold mb-2 text-gray-700">Прибуття</h3>
+          <div className="border border-gray-200 bg-gray-100 rounded-md p-4">
+            <h3 className="text-lg font-semibold mb-2 text-gray-700">Прибуття:</h3>
             <p>Рейс: {turnaround.arrived_flight_name ?? "—"}</p>
             <p>Дата: {turnaround.arrived_date ?? "—"}</p>
             <p>Час: {turnaround.arrived_time ?? "—"}</p>
           </div>
 
           {/* Departure Block */}
-          <div className="border border-gray-200 rounded-md p-4">
-            <h3 className="text-lg font-semibold mb-2 text-gray-700">Відправлення</h3>
+          <div className="border border-gray-200 bg-gray-100 rounded-md p-4">
+            <h3 className="text-lg font-semibold mb-2 text-gray-700">Відправлення:</h3>
             <p>Рейс: {turnaround.next_departure_flight_name ?? "—"}</p>
             <p>Дата: {turnaround.next_departure_date ?? "—"}</p>
             <p>Час: {turnaround.next_departure_time ?? "—"}</p>
           </div>
         </div>
 
-        <div className="mt-4">
+        <div className="mt-4 border border-gray-200 bg-gray-100 rounded-md p-4">
           <p className="text-lg font-semibold text-gray-700 mb-2">Ситуація:</p>
           {/* <p className="italic">{getSituationDescription(turnaround)}</p> */}
           <p>Прибуття під час зміни: {turnaround.arrived_within_shift ? "Так" : "Ні"}</p>
@@ -86,19 +90,40 @@ const TurnaroundDetails = () => {
         <div key={idx} className="bg-white shadow rounded-lg p-4 mb-6">
           <h3 className="text-lg font-semibold mb-2">Пакет № {wp.package_number}</h3>
           <p>
-            <span className="font-medium">Внутрішній номер:</span> {wp.package_number_internal}
+            <span className="font-medium">Ідентифікатор пакета:</span> {wp.package_number_internal}
           </p>
           <p>
             <span className="font-medium">Опис:</span> {wp.description}
           </p>
           <p>
-            <span className="font-medium">Статус:</span> {wp.status === 0 ? "Активний" : "Інший"}
+            {/* <span className="font-medium">Статус:</span> {wp.status === 0 ? "Активний" : "Інший"} */}
+            <span className="font-medium">Статус:</span> {wp.status}
           </p>
-          <p>
-            <span className="font-medium">Початок:</span> {wp.start_date} {wp.start_time}
+          {/* Початок */}
+          <p className="mt-4 mb-2 flex items-center gap-2 text-base flex-wrap">
+            <span className="inline-flex items-center gap-1 rounded-lg bg-gray-200 text-gray-700 px-2 py-1 font-semibold">
+              {/* <AiOutlineCalendar className="text-lg" /> */}
+              Початок робіт:
+            </span>
+            <span className="flex items-center gap-1 font-semibold text-gray-900">
+              <AiOutlineCalendar className="text-gray-500" />
+              {wp.start_date}
+              <AiOutlineClockCircle className="text-gray-500 ml-2" />
+              {wp.start_time}
+            </span>
           </p>
-          <p>
-            <span className="font-medium">Завершення:</span> {wp.end_date} {wp.end_time}
+          {/* Завершення */}
+          <p className="flex items-center gap-2 text-base flex-wrap">
+            <span className="inline-flex items-center gap-1 rounded-lg bg-gray-200 text-gray-700 px-2 py-1 font-semibold">
+              {/* <AiOutlineCalendar className="text-lg" /> */}
+              Завершення робіт:
+            </span>
+            <span className="flex items-center gap-1 font-semibold text-gray-900">
+              <AiOutlineCalendar className="text-gray-500" />
+              {wp.end_date}
+              <AiOutlineClockCircle className="text-gray-500 ml-2" />
+              {wp.end_time}
+            </span>
           </p>
 
           {/* Events */}
@@ -108,47 +133,31 @@ const TurnaroundDetails = () => {
               <p className="text-gray-500 italic">Завдань немає</p>
             ) : (
               <div className="grid gap-4">
-                {wp.events.map((event, evIdx) => {
+                {wp.events.map((event) => {
                   // Перевірка чи це завдання виконане
                   const isDone = doneTasks?.some(
                     (done) =>
                       +done.event_performance_number_identifier === +event.event_performance_number_identifier &&
-                      +done.work_package_number_identifier === +wp.package_number_internal // або інший відповідний ідентифікатор
+                      +done.work_package_number_identifier === +wp.package_number_internal
                   );
                   if (isDone) {
                     return (
-                      <div key={evIdx} className="border border-green-400 rounded-md p-3 bg-green-100">
-                        <p>
-                          <span className="font-semibold">Ідентифікаційний номер події:</span>{" "}
-                          {event.event_performance_number_identifier}
-                        </p>
-                        <p>
-                          <span className="font-semibold">Код події:</span> {event.event_code}
-                        </p>
-                        <p>
-                          <span className="font-semibold">Опис:</span> {event.event_display_description}
-                        </p>
-                        <p>
-                          <span className="font-semibold">Людино-години:</span> {event.estimated_man_hours}
-                        </p>
-                        <p>
-                          <span className="font-semibold">Статус:</span> {event.status}
-                        </p>
-                        <p>
-                          <span className="font-semibold text-green-700">Виконано</span>
-                        </p>
-                      </div>
+                      <EventCard key={event.event_performance_number_identifier} data={{ ...event, completed: true }} />
                     );
                   }
                   // Якщо не виконане — як було
                   return (
-                    <div key={evIdx} className="border border-gray-200 rounded-md p-3 bg-gray-100">
-                      <p>
-                        <span className="font-semibold ">Ідентифікаційний номер події:</span>{" "}
+                    <div
+                      key={event.event_performance_number_identifier}
+                      className="border border-gray-200 rounded-md p-3 bg-gray-100 space-y-1"
+                    >
+                      {/* <p>
+                        <span className="font-semibold ">Ідентифікаційний номер завдання:</span>{" "}
                         {event.event_performance_number_identifier}
-                      </p>
+                      </p> */}
+                      <h3 className="text-lg font-semibold">#{event.event_performance_number_identifier}</h3>
                       <p>
-                        <span className="font-semibold">Код події:</span> {event.event_code}
+                        <span className="font-semibold">Код завдання:</span> {event.event_code}
                       </p>
                       <p>
                         <span className="font-semibold">Опис:</span> {event.event_display_description}
@@ -167,7 +176,7 @@ const TurnaroundDetails = () => {
                           pathname: `package/${wp.package_number_internal}/task/${event.event_performance_number_identifier}`,
                           search: `?${searchParams.toString()}`,
                         }}
-                        className="mt-2 inline-block font-semibold bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                        className="mt-2 inline-block font-semibold bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
                       >
                         Призначити працівників
                       </Link>

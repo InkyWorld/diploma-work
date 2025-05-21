@@ -71,7 +71,7 @@ function AdminTableRow({ user }) {
         <td className="px-4 py-3">
           <div className="flex items-center justify-center flex-col gap-2 h-full">
             <button
-              className="bg-gray-400 hover:bg-yellow-500 text-white px-3 py-1 rounded-lg text-xs"
+              className="bg-gray-400 hover:bg-gray-500 text-white px-3 py-1 rounded-lg text-xs"
               onClick={() => {
                 navigate(`/admin/users/edit/${user.email}`, { state: user });
               }}
