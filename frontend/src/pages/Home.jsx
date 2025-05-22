@@ -4,18 +4,17 @@ import { useNavigate } from "react-router-dom";
 import { FaPlane, FaTools, FaClipboardCheck } from "react-icons/fa";
 import { GiMechanicGarage } from "react-icons/gi";
 import { BiSolidLock } from "react-icons/bi";
-import Header from "../components/Header";
+import { formatRolePath, translateRole } from "../helpers/helpers";
 
 function Home() {
   const navigate = useNavigate();
 
   const user = useSelector((state) => state.auth.currentUser);
-  // const user = null;
-  console.log("Home", user);
+  // console.log("Home", user);
 
   const handleActionClick = () => {
     if (user) {
-      navigate("/admin"); // або /engineer, /supervisor залежно від ролі
+      navigate(`/${formatRolePath(user.role)}`);
     } else {
       navigate("/login");
     }
@@ -24,11 +23,8 @@ function Home() {
   // bg-radial from-blue-100 to-blue-300
 
   return (
-    // <div className="min-h-screen bg-white p-4 sm:p-8 flex items-center justify-center overflow-y-auto">
-    <div className="relative bg-[url('https://www.publicdomainpictures.net/pictures/370000/nahled/himmel-wolken-wetter-hintergrund-1601102999r1t.jpg')] bg-cover bg-center h-screen  p-4 sm:p-8 lg:flex lg:items-center lg:justify-center overflow-y-scroll">
-      {/* <div className="relative bg-[url('https://images.cnscdn.com/6/0/4/b/604b5cc948cbb2299cb0a69133771570/original.jpg')] bg-cover bg-center h-screen  p-4 sm:p-8 lg:flex lg:items-center lg:justify-center overflow-y-scroll"> */}
-      {/* <div class="absolute inset-0 "></div> */}
-      <div className="bg-white/70 rounded-lg p-6 mx-auto space-y-6">
+    <div className="relative bg-[url('https://www.publicdomainpictures.net/pictures/370000/nahled/himmel-wolken-wetter-hintergrund-1601102999r1t.jpg')] bg-cover bg-center p-4 lg:p-8 h-full md:flex md:items-center md:justify-center overflow-y-auto">
+      <div className="bg-white/70 rounded-lg p-4 mx-auto space-y-4">
         {/* Вступний блок */}
         <div className="p-4 rounded-2xl px-6 text-center">
           <h2 className="text-2xl sm:text-3xl font-bold text-black mb-2">
@@ -77,13 +73,19 @@ function Home() {
         </div>
 
         {/* Авторизаційний блок */}
-        <div className="rounded-2xl p-4 text-center">
+        <div className="rounded-2xl text-center">
           <h1 className="text-xl sm:text-2xl font-semibold text-black mb-2">
-            {user ? <span>🔓 Ви увійшли як: {user.role}</span> : "🔒 Ви не увійшли у систему"}
+            {user ? (
+              <span>
+                🔓 Ви увійшли як: <span className="italic">{translateRole(user.role)}</span>
+              </span>
+            ) : (
+              "🔒 Ви не увійшли у систему"
+            )}
           </h1>
           <p className="text-gray-800 mb-4">
             {user
-              ? "Вітаємо у системі XYZ, перейдіть до вашої панелі щоб розпочати роботу."
+              ? `Вітаємо у системі ${user.full_name}, перейдіть до вашої панелі щоб розпочати роботу.`
               : "Для доступу до функцій системи увійдіть у свій обліковий запис."}
           </p>
           <button
@@ -95,77 +97,7 @@ function Home() {
         </div>
       </div>
     </div>
-    // </div>
   );
 }
 
 export default Home;
-
-{
-  /* Header */
-}
-{
-  /* <header className="flex items-center justify-between px-6 py-4 bg-blue-900 text-white shadow-md">
-        <div className="flex items-center gap-2 text-xl font-bold">
-          <FaPlane className="text-2xl" />
-          AeroService
-        </div>
-        {user && (
-          <div className="flex items-center gap-3">
-            <div className="bg-white text-blue-900 rounded-full w-9 h-9 flex items-center justify-center font-bold shadow-inner">
-              {user.name
-                .split(" ")
-                .map((w) => w[0])
-                .join("")
-                .toUpperCase()}
-            </div>
-            <button
-              onClick={() => {
-                // Викликайте logout-функцію тут
-                // localStorage.removeItem("token");
-                navigate("/login");
-              }}
-              className="bg-red-500 hover:bg-red-600 px-3 py-1 rounded text-white flex items-center gap-1"
-            >
-              Вийти
-            </button>
-          </div>
-        )}
-        {!user && (
-          <button
-            onClick={() => navigate("/login")}
-            className="bg-white text-blue-900 px-3 py-1 rounded hover:bg-blue-100 transition"
-          >
-            Увійти
-          </button>
-        )}
-      </header> */
-}
-{
-  /* <Header
-        userName="Андрій Андрійович Сидоренко"
-        userRole="admin"
-        onLogout={() => console.log("Logout triggered")}
-      /> */
-}
-
-{
-  /* Welcome / Auth Info Card */
-}
-
-{
-  /* <div className="w-full max-w-4xl mb-6 text-sm text-gray-700 flex justify-between items-center border border-blue-100 bg-white rounded-lg px-4 py-2 shadow-sm">
-          <span>
-            {user ? (
-              <>
-                🔓 Ви увійшли як: <strong>{user.role}</strong>
-              </>
-            ) : (
-              <>🔒 Ви не увійшли у систему</>
-            )}
-          </span>
-          <button onClick={handleActionClick} className="text-blue-700 hover:underline font-medium">
-            {user ? "Перейти до панелі" : "Увійти"}
-          </button>
-        </div> */
-}

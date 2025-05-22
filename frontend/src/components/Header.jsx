@@ -1,19 +1,21 @@
 import { FaPlane } from "react-icons/fa";
 import { FiLogOut, FiSettings, FiSun } from "react-icons/fi";
 import { shortWorkerName } from "../helpers/helpers";
+import { useNavigate } from "react-router-dom";
 
 const Header = ({ userName, userRole, onLogout }) => {
+  const navigate = useNavigate();
   return (
     // <header className="w-full flex items-center justify-between px-6 py-3 bg-gradient-to-br from-blue-400 via-blue-200 to-blue-400 text-white shadow-md">
-    <header className="w-full flex items-center justify-between px-6 py-3 bg-gray-500 text-white shadow-md">
+    <header
+      onClick={() => navigate("/")}
+      className="w-full flex items-center justify-between px-6 py-3 bg-gray-500 text-white shadow-md"
+    >
       {/* Ліворуч: Логотип і назва */}
-      <div className="flex items-center gap-3 text-xl font-semibold">
+      <div className="flex items-center gap-3 text-xl font-semibold cursor-pointer">
         <FaPlane className="text-2xl" />
         <span className="hidden sm:block">AeroService</span>
       </div>
-
-      {/* По центру: Роль */}
-      {/* <div className="hidden sm:block text-sm font-medium tracking-wide text-blue-100">{userRole}</div> */}
 
       {/* Праворуч: Користувач та дії */}
       <div className="flex items-center gap-4">

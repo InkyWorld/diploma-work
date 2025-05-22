@@ -8,8 +8,9 @@ function RequireAuth({ allowedRoles }) {
   console.log(accessToken, role);
 
   if (!accessToken) {
-    console.log("redirect to login");
-    return <Navigate to="/login" replace />;
+    console.log("redirect to home");
+    // return <Navigate to="/login" replace />;
+    return <Navigate to="/" replace />;
   }
   if (!allowedRoles.includes(role)) {
     // ❌ Роль не дозволена — перенаправити на forbidden

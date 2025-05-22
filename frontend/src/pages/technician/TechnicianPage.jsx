@@ -94,16 +94,29 @@ export default function TechnicianPage() {
 
       <TechnicianPageFilters currentFilter={queryParams.filter} setFilter={handleChangeFilter} />
 
-      <section className="space-y-4">
-        {filteredData.map((itemData) => (
-          <EventCard
-            key={itemData.event_performance_number_identifier}
-            data={itemData}
-            buttonText="Позначити як виконане"
-            isLoading={isPending}
-            handleClick={() => mutate({ taskId: itemData.event_performance_number_identifier, shift: shift })}
-          />
-        ))}
+      <section className="space-y-4  p-4">
+        {!filteredData.length && queryParams.filter !== "done" && (
+          <p className="text-center text-lg font-medium">
+            На даний момент у вас немає активних завдань для виконання. Будь ласка, перевірте пізніше або зверніться до
+            керівника зміни.
+          </p>
+        )}
+        {!filteredData.length && queryParams.filter === "done" && (
+          <p className="text-center text-lg font-medium">
+            Ви ще не виконали жодного завдання. Виконані завдання з’являться тут після завершення. Бажаємо успіхів у
+            роботі!
+          </p>
+        )}
+        {filteredData.length > 0 &&
+          filteredData.map((itemData) => (
+            <EventCard
+              key={itemData.event_performance_number_identifier}
+              data={itemData}
+              buttonText="Позначити як виконане"
+              isLoading={isPending}
+              handleClick={() => mutate({ taskId: itemData.event_performance_number_identifier, shift: shift })}
+            />
+          ))}
       </section>
     </div>
   );

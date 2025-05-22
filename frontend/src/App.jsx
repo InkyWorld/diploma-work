@@ -33,6 +33,7 @@ import DispatcherDataPage from "./pages/flight-dispatcher/DispatcherDataPage";
 //? ENGINEER
 import EngineerPackagesPage from "./pages/engineer/EngineerPackagesPage";
 import EngineerAllEvents from "./pages/engineer/EngineerAllEvents";
+import ShiftPlan from "./pages/shift-supervisor/ShiftPlan";
 
 function App() {
   console.log("app init");
@@ -48,14 +49,15 @@ function App() {
 
         <Routes>
           {/* Загальні сторінки */}
-          <Route path="/" element={<Navigate to="/login" replace />} />
-          <Route path="/home" element={<Home />} />
+          //? BEFORE
+          {/* <Route path="/" element={<Navigate to="/login" replace />} />
+          <Route path="/home" element={<Home />} /> */}
           {/* <Route path="/" element={role ? <Navigate to={`/${role}`} replace /> : <Navigate to="/login" replace />} /> */}
-          {/* <Route path="/" element={<Welcome />} /> */}
+          //?AFTER
+          <Route path="/" element={<Home />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/forbidden" element={<Forbidden />} />
           {/* <Route path="/unauthorized" element={<Unauthorized />} /> */}
-
           {/* Захищені маршрути */}
           <Route element={<RequireAuth allowedRoles={["admin"]} />}>
             <Route path="/admin" element={<ProtectedPageLayout />}>
@@ -64,34 +66,30 @@ function App() {
               <Route path="users/create" element={<CreateUserPage />} />
             </Route>
           </Route>
-
           <Route element={<RequireAuth allowedRoles={["engineer"]} />}>
             <Route path="/engineer" element={<ProtectedPageLayout />}>
               <Route index element={<EngineerPackagesPage />} />
               <Route path="eventsAll" element={<EngineerAllEvents />} />
             </Route>
           </Route>
-
           <Route element={<RequireAuth allowedRoles={["flight dispatcher"]} />}>
             <Route path="/flight-dispatcher" element={<ProtectedPageLayout />}>
               <Route index element={<DispatcherDataPage />} />
             </Route>
           </Route>
-
           <Route element={<RequireAuth allowedRoles={["shift supervisor"]} />}>
             <Route path="/shift-supervisor" element={<ProtectedPageLayout />}>
-              <Route index element={<SupervisorDashboard />} />
+              {/* <Route index element={<SupervisorDashboard />} /> */}
+              <Route index element={<ShiftPlan />} />
               <Route path="turnaround/:turnaroundId" element={<TurnaroundDetails />} />
               <Route path="turnaround/:turnaroundId/package/:packageId/task/:taskId" element={<AssignWorkersPage />} />
             </Route>
           </Route>
-
           <Route element={<RequireAuth allowedRoles={["technician"]} />}>
             <Route path="/technician" element={<ProtectedPageLayout />}>
               <Route index element={<WorkerDashboard />} />
             </Route>
           </Route>
-
           <Route path="*" element={<NotFound />} />
         </Routes>
       </AuthProvider>

@@ -4,6 +4,7 @@ import deleteUser from "../../services/admin/deleteUser";
 import { useSelector } from "react-redux";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
+import { translateRole } from "../../helpers/helpers";
 
 function AdminTableRow({ user }) {
   const [isOpenModal, setIsOpenModal] = useState(false);
@@ -64,7 +65,7 @@ function AdminTableRow({ user }) {
           <img src={user.img_profile} alt={user.full_name} className="w-10 h-10 rounded-full object-cover" />
         </td>
         <td className="py-4 px-6">{user.full_name}</td>
-        <td className="py-4 px-6 capitalize">{user.role}</td>
+        <td className="py-4 px-6 capitalize">{translateRole(user.role)}</td>
         <td className="py-4 px-6 hidden md:table-cell">{user.email}</td>
         <td className="py-4 px-6 hidden lg:table-cell">{user.age}</td>
         <td className="py-4 px-6 hidden lg:table-cell">{user.gender === "M" ? "Чоловік" : "Жінка"}</td>

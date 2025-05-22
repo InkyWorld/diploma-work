@@ -1,3 +1,4 @@
+import toast from "react-hot-toast";
 import API_URL from "../../config";
 import { setAccessToken, setCurrentUser, setRole } from "../../redux/slices/authSlice";
 
@@ -8,12 +9,12 @@ const login = async function (credentials, navigate, dispatch) {
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
       },
-      // body: new URLSearchParams(credentials)
+      body: new URLSearchParams(credentials),
       //? ADMIN
-      body: new URLSearchParams({
-        username: "zz@z.z",
-        password: "zz",
-      }),
+      // body: new URLSearchParams({
+      //   username: "zz@z.z",
+      //   password: "zz",
+      // }),
       //? SUPERVISOR
       // body: new URLSearchParams({
       //   username: "feyafe5296@deusa7.com",
@@ -51,7 +52,6 @@ const login = async function (credentials, navigate, dispatch) {
       },
     });
     console.log("meResponse", meResponse);
-    //! CATCH ERROR
     if (!meResponse.ok) {
       throw new Error("Failed to fetch me data");
     }
@@ -61,6 +61,8 @@ const login = async function (credentials, navigate, dispatch) {
 
     dispatch(setCurrentUser(meData));
     dispatch(setRole(meData.role));
+    toast.success("Ви успішно увійшли в систему");
+
     if (meData.role === "admin") navigate("/admin");
     else if (meData.role === "flight dispatcher") navigate("/flight-dispatcher");
     else if (meData.role === "engineer") navigate("/engineer");
@@ -69,24 +71,8 @@ const login = async function (credentials, navigate, dispatch) {
     else navigate("/forbidden");
   } catch (error) {
     console.error("Login error:", error.message);
+    toast.error("Не вдалося увійти в систему, перевірте введений пароль та email");
   }
 };
 
 export default login;
-
-// body: new URLSearchParams({
-//   username: "xexet74033@bauscn.com",
-//   password: "1s5d2A5E",
-// }),
-// body: new URLSearchParams({
-//   username: "fixoya5507@hedotu.com",
-//   password: "engineer",
-// }),
-// body: new URLSearchParams({
-//   username: "yojeka2532@cyluna.com",
-//   password: "dispatcher",
-// }),
-// body: new URLSearchParams({
-//   username: "yitot72527@cyluna.com",
-//   password: "technician",
-// }),
